@@ -6,7 +6,7 @@ import wavefuncitons
 from wavefuncitons import corenell_wave_function
 
 from enum import Enum
-from data import ParticleNames, quark_masses, quarkonium_masses
+from data import ParticleNames, particle_masses
 
 import numericalSolvers
 
@@ -29,25 +29,31 @@ def count_nodes_and_turns(u,v,r):
     return node_count, turn_count
 
 U0 = [0,1]
-alpha = 0.4
-init_beta = 0.195
+charmonium_cornell_alpha = 0.4
+initial_charmonium_cornell_beta = 0.195
 
-charm_quark_mass = 1.27
-charmonium_mass_1S = 2.9839
+charm_quark_mass = particle_masses[ParticleNames.CHARM]
+charmonium_mass_1S = particle_masses[ParticleNames.CHARMONIUM]['1S']
 
-# charmonium_energy_1S = charmonium_mass_1S - 2*charm_quark_mass
-#mu = mc/2
 
 recpricol_reduced_mass = 1/charm_quark_mass + 1/charm_quark_mass
-reduced_mass = 1/recpricol_reduced_mass
+reduced_charmonium_mass = 1/recpricol_reduced_mass
 r = np.linspace(0.0000001, 15, 10000)
 
-charmonium_energy_1S = quarkonium_masses[ParticleNames.CHARMONIUM]['1S'] - 2*quark_masses[ParticleNames.CHARM]
+charmonium_energy_1S = particle_masses[ParticleNames.CHARMONIUM]['1S'] - 2*particle_masses[ParticleNames.CHARM]
 
 
 # beta, sol = recursive_staircase_solver(U0, alpha, epsilon_lower=init_beta, fixed_value=charmonium_energy_1S, layer=30)
-beta, sol = numericalSolvers.recursive_staircase_solver(U0, r, corenell_wave_function, alpha, 
-        charmonium_energy_1S, reduced_mass= reduced_mass ,epsilon_lower = init_beta, calibration_mode = True, flight = 30)
+
+wavefunction_arguments = (charmonium_cornell_alpha, initial_charmonium_cornell_beta,
+    reduced_charmonium_mass, charmonium_energy_1S)
+
+beta, sol = numericalSolvers.recursive_staircase_solver(U0, r, corenell_wave_function, 
+    alpha = charmonium_cornell_alpha, 
+    fixed_value = charmonium_energy_1S, 
+    reduced_mass= reduced_charmonium_mass,
+    epsilon_lower = initial_charmonium_cornell_beta, 
+    calibration_mode = True, flight = 30)
 
 u = sol[:,0]
 pdf = wavefuncitons.square_wavefunction(u)
