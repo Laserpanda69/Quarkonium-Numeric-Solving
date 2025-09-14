@@ -1,0 +1,34 @@
+import numpy as np
+import scipy.integrate 
+
+import potentialModels
+
+def corenell_wave_function(U0,r, n, l, alpha, beta, mu, E):
+    u,v= U0
+    a = l*(l+1)
+    
+    potential = potentialModels.cornell_potential(r, alpha, beta)
+    
+    return [v,(a/r**2)*u -2*mu*u*(E-potential)]
+
+def square_wavefunction(wave_function: list[float]) -> list[float]:
+    pdf = np.zeros(wave_function.shape)
+    for i in range(len(wave_function)):
+        pdf[i] = abs(wave_function[i])**2
+    return pdf
+
+def normalise_wavefunction(
+        probability_density_function: list[float], 
+        wave_function: list[float], 
+        v: list[float], 
+        radii: list[float]
+    ) -> list[float]:
+    
+    norm = scipy.integrate.simpson(probability_density_function, radii)
+    recprical_norm = 1/norm
+    root_reciprical_norm = 1/np.sqrt(norm)
+    probability_density_function = probability_density_function*recprical_norm
+    wave_function = wave_function*root_reciprical_norm
+    v = v *root_reciprical_norm
+    
+    return probability_density_function, wave_function, v

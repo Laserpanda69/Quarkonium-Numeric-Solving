@@ -1,41 +1,13 @@
-import numpy as np
+import numpy as np  
 import matplotlib.pyplot as plt
 import scipy.integrate 
 
-def cornell_potential(radii: list[float], alpha: float, beta: float) -> list[float]:
-    return -(4/3)*alpha/radii + beta*2
+from wavefuncitons import corenell_wave_function
 
-def wave_function(U0,r, n, l, alpha, beta, mu, E):
-    u,v= U0
-    a = l*(l+1)
-    b = 2*mu*E
-    c = 2*mu*alpha
-    d = 2*mu*beta
-    
-    potential = cornell_potential(r, alpha, beta)
-    
-    return [v,(a/r**2)*u -2*mu*(E-potential)]
+from enum import Enum
+from quarkData import ParticleNames, quark_masses, quarkonium_masses
 
-def square_wavefunction(wave_function: list[float]) -> list[float]:
-    pdf = np.zeros(wave_function.shape)
-    for i in range(len(wave_function)):
-        pdf[i] = abs(wave_function[i])**2
-    return pdf
-def normalise_wavefunction(
-        probability_density_function: list[float], 
-        wave_function: list[float], 
-        potential: list[float], 
-        radii: list[float]
-    ) -> list[float]:
-    
-    norm = scipy.integrate.simpson(probability_density_function, radii, even='first')
-    recprical_norm = 1/norm
-    root_reciprical_norm = 1/np.sqrt(norm)
-    probability_density_function = probability_density_function*recprical_norm
-    wave_function = wave_function*root_reciprical_norm
-    potential = potential *root_reciprical_norm
-    
-    return probability_density_function, wave_function, potential
+
 
 
 def count_nodes_and_turns(u,v,r):
@@ -55,19 +27,85 @@ def count_nodes_and_turns(u,v,r):
             
     return node_count, turn_count
 
-
 U0 = [0,1]
 alpha = 0.4
-beta = 0.195
-charm_quark_mass = 1.34
-charmonium_mass_1S = 3.068
+init_beta = 0.195
+
+charm_quark_mass = 1.27
+charmonium_mass_1S = 2.9839
+
 charmonium_energy_1S = charmonium_mass_1S - 2*charm_quark_mass
 #mu = mc/2
 
-recpricol_mu = 1/charm_quark_mass + 1/charm_quark_mass
-mu = 1/recpricol_mu
-r = np.linspace(0.0000001, 6, 10000)
+recpricol_reduced_mass = 1/charm_quark_mass + 1/charm_quark_mass
+reduced_mass = 1/recpricol_reduced_mass
+r = np.linspace(0.0000001, 15, 10000)
 
-sol = scipy.integrate.odeint(wave_function, U0, r, args=(1,0,alpha,beta, mu, charmonium_energy_1S))
-plt.plot(r, sol[:,0])
+    # unexcited_state_energy = quarkonium_masses[particle_name]['1S'] - 2*quark_masses[particle_name]
+
+
+def while_staircase_solver(u0, radii, wave_function, alpha, fixed_value, epsilon, step_size = 0.015, flight = 5, calibration_mode = False):
+    # epsilon is beta in calibration mode and energy if not
+    # fixed value is the inverse
+    divergence_has_flipped = False
+    steps_taken = 0
+    while not divergence_has_flipped:
+        
+        epsilon_lower = epsilon + (step_size * steps_taken)
+
+        args= (1,0,alpha,epsilon_lower, reduced_mass, fixed_value) if calibration_mode \
+            else (1,0,alpha, fixed_value, reduced_mass, epsilon_lower)
+        
+        sol = scipy.integrate.odeint(wave_function, u0, radii, args = args)
+        v1 = sol[:,1]
+        
+        # Takes step
+        steps_taken += 1
+        
+        epsilon_upper = epsilon + (step_size * steps_taken)
+        args= (1,0,alpha,epsilon_upper, reduced_mass, fixed_value) if calibration_mode \
+            else (1,0,alpha, fixed_value, reduced_mass, epsilon_upper)
+        sol = scipy.integrate.odeint(wave_function, u0, radii, args=args)
+        v2 = sol[:,1]
+        
+        divergence_has_flipped = (v1[-1] < 0) != (v2[-1] < 0)
+        
+    gamma = (epsilon_lower+epsilon_upper)/2
+
+    if flight > 0:
+        return while_staircase_solver(u0, radii, wave_function, alpha, fixed_value, epsilon = epsilon_lower, step_size=step_size/2, flight= flight -1, calibration_mode=calibration_mode)
+    
+    args= (1,0,alpha,gamma, reduced_mass, fixed_value) if calibration_mode \
+        else (1,0,alpha, fixed_value, reduced_mass, gamma)
+    return gamma, scipy.integrate.odeint(wave_function, u0, radii, args= args)
+
+# epsilon lower is given aqnd not calculated as it avoids calculating all values twice
+def recursive_staircase_solver(u0, alpha, epsilon_lower, fixed_value, wave_function, calibration_mode = False, step_size = 0.015, steps_taken = 0, flight = 5):
+    epsilon_upper = epsilon_lower + step_size * (steps_taken+1)
+    v_lower = scipy.integrate.odeint(wave_function, u0, r, args=(1,0,alpha,epsilon_lower, reduced_mass, fixed_value))[:,0]
+    v_upper = scipy.integrate.odeint(wave_function, u0, r, args=(1,0,alpha,epsilon_upper, reduced_mass, fixed_value))[:,0]
+    
+    divergence_has_flipped = (v_lower[-1] < 0) != (v_upper[-1] < 0)
+    if not divergence_has_flipped:
+        return recursive_staircase_solver(u0, epsilon_upper, fixed_value, step_size= step_size, steps_taken= steps_taken+1, flight=flight)
+    
+    # print(layer)
+    # Divergence has flipped
+    if flight > 0:
+        return recursive_staircase_solver(u0, epsilon_lower, fixed_value, step_size = step_size/2, steps_taken = 0, flight = flight - 1)
+    
+    # Divergence has flipped and all layers have been run
+    gamma = (epsilon_lower+epsilon_upper)/2
+    return gamma, scipy.integrate.odeint(wave_function, u0, r, args=(1,0,alpha,gamma, reduced_mass, fixed_value))
+    
+# beta, sol = recursive_staircase_solver(U0, alpha, epsilon_lower=init_beta, fixed_value=charmonium_energy_1S, layer=30)
+beta, sol = while_staircase_solver(U0, r, corenell_wave_function, alpha, charmonium_energy_1S, init_beta, flight = 30, calibration_mode=True)
+u = sol[:,0]
+
+
+
+print(beta)
+plt.plot(r, u)
 plt.show()
+
+
