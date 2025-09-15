@@ -11,22 +11,6 @@ from data import ParticleNames, particle_masses
 import numericalSolvers
 
 
-def count_nodes_and_turns(u,v,r):
-    node_count = 0
-    turn_count = 0
-    for i in range(len(r) -1):
-        cross_up = u[i] <= 0 and u[i+1] >= 0
-        cross_down = u[i] >= 0 and u[i+1] <= 0
-        
-        turn_up = v[i] >= 0 and v[i+1] <= 0
-        turn_down = v[i] <= 0 and v[i+1] >= 0
-        
-        if cross_up or cross_down:
-            node_count += 1
-        if turn_up or turn_down:
-            turn_count +=1
-            
-    return node_count, turn_count
 
 U0 = [0,1]
 charmonium_cornell_alpha = 0.4
@@ -38,7 +22,7 @@ charmonium_mass_1S = particle_masses[ParticleNames.CHARMONIUM]['1S']
 
 recpricol_reduced_mass = 1/charm_quark_mass + 1/charm_quark_mass
 reduced_charmonium_mass = 1/recpricol_reduced_mass
-r = np.linspace(0.0000001, 15, 10000)
+r = np.linspace(0.0000001, 15, 1000)
 
 charmonium_energy_1S = particle_masses[ParticleNames.CHARMONIUM]['1S'] - 2*particle_masses[ParticleNames.CHARM]
 
@@ -55,28 +39,41 @@ charmonium_beta, sol = numericalSolvers.calibration_staircase(
         flight = 30
     )
 
-# u = sol[:,0]
-# pdf = wavefuncitons.square_wavefunction(u)
-# plt.plot(r, pdf)
+u = sol[:,0]
+pdf = wavefuncitons.square_wavefunction(u)
+plt.plot(r, pdf)
 
 last_energy_value = charmonium_energy_1S - 0.1
 offset = 0.01
 print(f"charmonium_energy_1S = {charmonium_energy_1S}")
-N = 5
-for n in range(N + 1):
+N = 3
+
+line_styles = ['solid', 'dotted', 'dashdot', 'loosley dashed']
+
+wfns = []
+for n in [2, 3]:
     for l in range(0, n):
-        E, sol = numericalSolvers.erergy_staircase(
-            U0, r, corenell_wave_function, 
+        E, sol = numericalSolvers.solve_for_energy(
+            U0, r, corenell_wave_function, n,
             potential_arguments=(l, charmonium_cornell_alpha, charmonium_beta, reduced_charmonium_mass),
             epsilon_lower = last_energy_value + offset, 
-            flight = 20
+            flight = 30
         )
-        
         u = sol[:,0]
+        v= sol[:,1]
+                
         pdf = wavefuncitons.square_wavefunction(u)
-        plt.plot(r, pdf)
+        if max(pdf) > 2:
+            print(f"{n}{l} has a PDF with a peak amplitude of {max(pdf)}")
+            continue
+        
+        plt.plot(r, pdf, linestyle = line_styles[l])
         print(f"E_{n}{l} = {E}")
+        # print(f"M_{n}{l} = {E+2*charm_quark_mass}")
         last_energy_value = E
+
+# for i in range(len(wfns)-1):
+#     print(np.array_equal(wfns[i], wfns[i+1]))
 
 print(charmonium_beta)
 plt.show()
