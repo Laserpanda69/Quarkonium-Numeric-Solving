@@ -65,7 +65,6 @@ print(f"charmonium_energy_1S = {charmonium_energy_1S}")
 N = 5
 for n in range(N + 1):
     for l in range(0, n):
-        print(n, l)
         E, sol = numericalSolvers.erergy_staircase(
             U0, r, corenell_wave_function, 
             potential_arguments=(l, charmonium_cornell_alpha, charmonium_beta, reduced_charmonium_mass),
