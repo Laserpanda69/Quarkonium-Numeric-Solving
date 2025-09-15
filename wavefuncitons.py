@@ -3,7 +3,7 @@ import scipy.integrate
 
 import potentialModels
 
-def corenell_wave_function(U0,r, n, l, alpha, beta, mu, E):
+def corenell_wave_function(U0,r, l, alpha, beta, mu, E):
     u,v= U0
     a = l*(l+1)
     

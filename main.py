@@ -48,18 +48,38 @@ charmonium_energy_1S = particle_masses[ParticleNames.CHARMONIUM]['1S'] - 2*parti
 wavefunction_arguments = (charmonium_cornell_alpha, initial_charmonium_cornell_beta,
     reduced_charmonium_mass, charmonium_energy_1S)
 
-beta, sol = numericalSolvers.recursive_staircase_solver(U0, r, corenell_wave_function, 
-    alpha = charmonium_cornell_alpha, 
-    fixed_value = charmonium_energy_1S, 
-    reduced_mass= reduced_charmonium_mass,
-    epsilon_lower = initial_charmonium_cornell_beta, 
-    calibration_mode = True, flight = 30)
+charmonium_beta, sol = numericalSolvers.calibration_staircase(
+        U0, r, corenell_wave_function, 
+        potential_arguments=(charmonium_cornell_alpha, charmonium_energy_1S, reduced_charmonium_mass),
+        b_lower = initial_charmonium_cornell_beta, 
+        flight = 30
+    )
 
-u = sol[:,0]
-pdf = wavefuncitons.square_wavefunction(u)
+# u = sol[:,0]
+# pdf = wavefuncitons.square_wavefunction(u)
+# plt.plot(r, pdf)
 
-print(beta)
-plt.plot(r, pdf)
+last_energy_value = charmonium_energy_1S - 0.1
+offset = 0.01
+print(f"charmonium_energy_1S = {charmonium_energy_1S}")
+N = 5
+for n in range(N + 1):
+    for l in range(0, n):
+        print(n, l)
+        E, sol = numericalSolvers.erergy_staircase(
+            U0, r, corenell_wave_function, 
+            potential_arguments=(l, charmonium_cornell_alpha, charmonium_beta, reduced_charmonium_mass),
+            epsilon_lower = last_energy_value + offset, 
+            flight = 20
+        )
+        
+        u = sol[:,0]
+        pdf = wavefuncitons.square_wavefunction(u)
+        plt.plot(r, pdf)
+        print(f"E_{n}{l} = {E}")
+        last_energy_value = E
+
+print(charmonium_beta)
 plt.show()
 
 
