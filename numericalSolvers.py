@@ -65,15 +65,15 @@ def count_nodes_turning_points(u, v, r):
 
 
 def calibration_staircase(u0, radii, wave_function, potential_arguments: tuple, b_lower, step_size = 0.015, steps_taken = 0, flight = 5):
-    alpha, base_energy, reduced_mass = potential_arguments
+    base_energy, reduced_mass = potential_arguments
     # Move epsilon, reduced mass, and fixed value into a tuple 
     # so other potentialls with differnt arguments can be used
     
     # This method not yet using calibration mode
     
     b_upper = b_lower + step_size * (steps_taken+1)
-    v_lower = scipy.integrate.odeint(wave_function, u0, radii, args=(0,alpha, b_lower, reduced_mass, base_energy))[:,1]
-    v_upper = scipy.integrate.odeint(wave_function, u0, radii, args=(0,alpha, b_upper, reduced_mass, base_energy))[:,1]
+    v_lower = scipy.integrate.odeint(wave_function, u0, radii, args=(0, b_lower, reduced_mass, base_energy))[:,1]
+    v_upper = scipy.integrate.odeint(wave_function, u0, radii, args=(0, b_upper, reduced_mass, base_energy))[:,1]
     
     divergence_has_flipped = (v_lower[-1] < 0) != (v_upper[-1] < 0)
     if not divergence_has_flipped:
@@ -88,18 +88,18 @@ def calibration_staircase(u0, radii, wave_function, potential_arguments: tuple, 
     
     # Divergence has flipped and all layers have been run
     gamma = (b_lower+b_upper)/2
-    return gamma, scipy.integrate.odeint(wave_function, u0, radii, args=(0,alpha,gamma, reduced_mass, base_energy))
+    return gamma, scipy.integrate.odeint(wave_function, u0, radii, args=(0,gamma, reduced_mass, base_energy))
 
 def energy_staircase(u0, radii, wave_function, potential_arguments: tuple, epsilon_lower, step_size = 0.015, steps_taken = 0, flight = 5):
-    l, alpha, beta, reduced_mass = potential_arguments
+    l, beta, reduced_mass = potential_arguments
     # Move epsilon, reduced mass, and fixed value into a tuple 
     # so other potentialls with differnt arguments can be used
     
     # This method not yet using calibration mode
     
     epsilon_upper = epsilon_lower + step_size * (steps_taken+1)
-    v_lower = scipy.integrate.odeint(wave_function, u0, radii, args=(l,alpha, beta, reduced_mass, epsilon_lower))[:,1]
-    v_upper = scipy.integrate.odeint(wave_function, u0, radii, args=(l,alpha, beta, reduced_mass, epsilon_upper))[:,1]
+    v_lower = scipy.integrate.odeint(wave_function, u0, radii, args=(l, beta, reduced_mass, epsilon_lower))[:,1]
+    v_upper = scipy.integrate.odeint(wave_function, u0, radii, args=(l, beta, reduced_mass, epsilon_upper))[:,1]
     
     divergence_has_flipped = (v_lower[-1] < 0) != (v_upper[-1] < 0)
     
@@ -118,7 +118,7 @@ def energy_staircase(u0, radii, wave_function, potential_arguments: tuple, epsil
     
     # Divergence has flipped and all layers have been run
         
-    return gamma, scipy.integrate.odeint(wave_function, u0, radii, args=(l,alpha,beta, reduced_mass, gamma))
+    return gamma, scipy.integrate.odeint(wave_function, u0, radii, args=(l,beta, reduced_mass, gamma))
 
 def solve_for_energy(u0, radii, wave_function, n, potential_arguments: tuple, epsilon_lower, step_size = 0.015, steps_taken = 0, flight = 5, energy_offset = 0.01):
     

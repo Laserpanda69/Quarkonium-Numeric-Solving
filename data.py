@@ -1,4 +1,5 @@
 from enum import Enum
+import math
 
 # GeV
 class ParticleNames(Enum):
@@ -26,4 +27,10 @@ particle_masses ={
             '1S': 0.0
         }
     }
+}
+
+physical_constants = {
+    'strong_coupling_constant': 0.4,
+    'e': math.e,
+    'pi': math.pi
 }
