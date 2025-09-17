@@ -17,7 +17,7 @@ charmonium_cornell_alpha = 0.4
 initial_charmonium_cornell_beta = 0.195
 
 charm_quark_mass = particle_masses[ParticleNames.CHARM]
-charmonium_mass_1S = particle_masses[ParticleNames.CHARMONIUM]['1S']
+charmonium_mass_1S = particle_masses[ParticleNames.CHARMONIUM]['experimental']['1S']
 
 
 recpricol_reduced_mass = 1/charm_quark_mass + 1/charm_quark_mass
@@ -50,8 +50,15 @@ N = 3
 
 line_styles = ['solid', 'dotted', 'dashdot', 'loosley dashed']
 
+last_energy_value = 0
+offset = 0.01
+print(f"charmonium_energy_1S = {charmonium_energy_1S}")
+N = 3
+
+line_styles = ['dotted', 'dashdot', 'dashed']
+
 wfns = []
-for n in [2, 3]:
+for n in [1, 2, 3, 4]:
     for l in range(0, n):
         E, sol = numericalSolvers.solve_for_energy(
             U0, r, corenell_wave_function, n,
@@ -62,12 +69,12 @@ for n in [2, 3]:
         u = sol[:,0]
         v= sol[:,1]
                 
-        pdf = wavefuncitons.square_wavefunction(u)
-        if max(pdf) > 2:
-            print(f"{n}{l} has a PDF with a peak amplitude of {max(pdf)}")
-            continue
         
-        plt.plot(r, pdf, linestyle = line_styles[l])
+        pdf = wavefuncitons.square_wavefunction(u)
+        pdf, u, v = wavefuncitons.normalise_wavefunction(pdf, u, v, r)
+        
+        ls = 'solid' if n == 1 else line_styles[l%len(line_styles)]
+        plt.plot(r, pdf, linestyle = ls)
         print(f"E_{n}{l} = {E}")
         # print(f"M_{n}{l} = {E+2*charm_quark_mass}")
         last_energy_value = E
@@ -77,5 +84,7 @@ for n in [2, 3]:
 
 print(charmonium_beta)
 plt.show()
+
+
 
 

@@ -19,6 +19,11 @@ class ParticleNames(Enum):
 particle_masses ={
     ParticleNames.CHARM: 1.27,
     ParticleNames.CHARMONIUM:{
-        '1S': 2.9839
+        'experimental':{
+            '1S': 2.9839
+        },
+        'numerical':{
+            '1S': 0.0
+        }
     }
 }
