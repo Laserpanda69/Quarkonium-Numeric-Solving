@@ -3,13 +3,20 @@ import scipy.integrate
 
 import potentialModels
 
-def corenell_wave_function(u0,r, l, alpha, beta, mu, E):
+from typing import Callable
+
+def _wave_function(u0,r, l, mu, E, potential_model: Callable, potential_arguments: tuple):
     u,v= u0
     L = l*(l+1)
-    potential = potentialModels.cornell_potential(r, alpha, beta)
+    potential = potential_model(*potential_arguments)
         
     
     return [v,(L*u)/(r*r) -2*mu*u*(E-potential)]
+
+def corenell_wave_function(u0,r, l, alpha, beta, mu, E):
+    return _wave_function(u0,r, l, mu, E, potentialModels.cornell_potential, (r, alpha, beta))
+        
+
 
 def square_wavefunction(wave_function: list[float]) -> list[float]:
     pdf = np.zeros(wave_function.shape)
