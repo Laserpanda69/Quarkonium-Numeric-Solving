@@ -117,13 +117,7 @@ def energy_staircase(u0, radii, wave_function, potential_arguments: tuple, epsil
             step_size = step_size/2, steps_taken = 0, flight = flight - 1)
     
     # Divergence has flipped and all layers have been run
-    
-    numeric_solution = scipy.integrate.odeint(wave_function, u0, radii, args=(l,alpha,beta, reduced_mass, gamma))
-    u = numeric_solution[:,0]
-    v = numeric_solution[:,0]
-
         
-    
     return gamma, scipy.integrate.odeint(wave_function, u0, radii, args=(l,alpha,beta, reduced_mass, gamma))
 
 def solve_for_energy(u0, radii, wave_function, n, potential_arguments: tuple, epsilon_lower, step_size = 0.015, steps_taken = 0, flight = 5, energy_offset = 0.01):
@@ -137,8 +131,8 @@ def solve_for_energy(u0, radii, wave_function, n, potential_arguments: tuple, ep
     nodes = nodes_tps.pop('nodes')
     turning_points = nodes_tps.pop('turning_points')
     # print(n)
-    print(nodes['count'])#, nodes['positions'][0]*(radii[-1]/len(radii)))
-    print(turning_points['count'])#, turning_points['positions'][0]*(radii[-1]/len(radii)))
+    # print(f"{nodes['count']}/{n-1}")#, nodes['positions'][0]*(radii[-1]/len(radii)))
+    # print(f"{turning_points['count']}/{n}")#, turning_points['positions'][0]*(radii[-1]/len(radii)))
     
     
     # node_location = nodes['positions'][0]*(radii[-1]/len(radii))

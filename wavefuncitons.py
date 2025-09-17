@@ -6,10 +6,10 @@ import potentialModels
 def corenell_wave_function(u0,r, l, alpha, beta, mu, E):
     u,v= u0
     L = l*(l+1)
-    
     potential = potentialModels.cornell_potential(r, alpha, beta)
+        
     
-    return [v,(L/r*r)*u -2*mu*u*(E-potential)]
+    return [v,(L*u)/(r*r) -2*mu*u*(E-potential)]
 
 def square_wavefunction(wave_function: list[float]) -> list[float]:
     pdf = np.zeros(wave_function.shape)
