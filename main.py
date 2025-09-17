@@ -17,48 +17,48 @@ charmonium_cornell_alpha = 0.4
 initial_charmonium_cornell_beta = 0.195
 
 charm_quark_mass = particle_masses[ParticleNames.CHARM]
-charmonium_mass_1S = particle_masses[ParticleNames.CHARMONIUM]['experimental']['1S']
+charmonium_1S_mass = particle_masses[ParticleNames.CHARMONIUM]['experimental']['1S']
 
 
 recpricol_reduced_mass = 1/charm_quark_mass + 1/charm_quark_mass
 reduced_charmonium_mass = 1/recpricol_reduced_mass
 r = np.linspace(0.0000001, 15, 1000)
 
-charmonium_energy_1S = particle_masses[ParticleNames.CHARMONIUM]['1S'] - 2*particle_masses[ParticleNames.CHARM]
+charmonium_1S_energy = charmonium_1S_mass - 2*particle_masses[ParticleNames.CHARM]
 
 
 # beta, sol = recursive_staircase_solver(U0, alpha, epsilon_lower=init_beta, fixed_value=charmonium_energy_1S, layer=30)
 
 wavefunction_arguments = (charmonium_cornell_alpha, initial_charmonium_cornell_beta,
-    reduced_charmonium_mass, charmonium_energy_1S)
+    reduced_charmonium_mass, charmonium_1S_energy)
 
 charmonium_beta, sol = numericalSolvers.calibration_staircase(
         U0, r, corenell_wave_function, 
-        potential_arguments=(charmonium_cornell_alpha, charmonium_energy_1S, reduced_charmonium_mass),
+        potential_arguments=(charmonium_cornell_alpha, charmonium_1S_energy, reduced_charmonium_mass),
         b_lower = initial_charmonium_cornell_beta, 
         flight = 30
     )
 
 u = sol[:,0]
+v = sol[:,1]
+
 pdf = wavefuncitons.square_wavefunction(u)
-plt.plot(r, pdf)
+pdf, u, v = wavefuncitons.normalise_wavefunction(pdf, u, v, r)
+plt.plot(r, pdf, color = 'red', linestyle =  'dashed')
 
-last_energy_value = charmonium_energy_1S - 0.1
-offset = 0.01
-print(f"charmonium_energy_1S = {charmonium_energy_1S}")
-N = 3
+plt.plot(r, [0]*r, color = "lightgrey", linestyle='dashed')
+print(f"charmonium_energy_1S = {charmonium_1S_energy}")
 
-line_styles = ['solid', 'dotted', 'dashdot', 'loosley dashed']
+line_styles = ['solid', 'dotted', 'dashdot']
 
 last_energy_value = 0
-offset = 0.01
-print(f"charmonium_energy_1S = {charmonium_energy_1S}")
+offset = 0
 N = 3
 
 line_styles = ['dotted', 'dashdot', 'dashed']
 
 wfns = []
-for n in [1, 2, 3, 4]:
+for n in range(N+1):
     for l in range(0, n):
         E, sol = numericalSolvers.solve_for_energy(
             U0, r, corenell_wave_function, n,
@@ -73,7 +73,8 @@ for n in [1, 2, 3, 4]:
         pdf = wavefuncitons.square_wavefunction(u)
         pdf, u, v = wavefuncitons.normalise_wavefunction(pdf, u, v, r)
         
-        ls = 'solid' if n == 1 else line_styles[l%len(line_styles)]
+        # ls = 'solid' if n == 1 else line_styles[l%len(line_styles)]
+        ls = line_styles[l%len(line_styles)]
         plt.plot(r, pdf, linestyle = ls)
         print(f"E_{n}{l} = {E}")
         # print(f"M_{n}{l} = {E+2*charm_quark_mass}")
