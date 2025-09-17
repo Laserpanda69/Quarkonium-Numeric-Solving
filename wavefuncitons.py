@@ -17,7 +17,7 @@ def corenell_wave_function(u0,r, l, beta, mu, E):
     return _wave_function(u0,r, l, mu, E, potentialModels.cornell_potential, (r, beta))
         
 def bhanot_rudaz_wave_function(u0,r, l, beta, mu, E):
-    return _wave_function(u0,r, l, mu, E, potentialModels.b, (r, beta))
+    return _wave_function(u0,r, l, mu, E, potentialModels.bhanot_rudaz_potential, (r, beta))
         
 
 def square_wavefunction(wave_function: list[float]) -> list[float]:

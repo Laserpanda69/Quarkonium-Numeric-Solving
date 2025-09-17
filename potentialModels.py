@@ -1,18 +1,21 @@
 import numpy as np
 import math
 import bisect
-from data import physical_constants
+from data import PHYSICAL_CONSTANTS
 
-ALPHA_S = physical_constants['strong_coupling_constant']
+ALPHA_S = PHYSICAL_CONSTANTS['strong_coupling_constant']
 def cornell_potential(r:float, beta: float) -> float:
     return -(4/3)*ALPHA_S/r + beta*r
 
 
-
 r_0_calc = lambda beta: np.power((4 * ALPHA_S / 2), 0.5) * np.power(beta, -0.5)
-r_1_calc = lambda beta: r_0_calc(ALPHA_S, beta) / math.e
-r_2_calc = lambda beta: r_0_calc(ALPHA_S, beta) * math.e
-b_calc = lambda beta: beta * r_2_calc(ALPHA_S, beta)
+# np.power((4 * ALPHA_S / 2), 0.5) is a constant, so is pre-calculated to avoid dividing zero
+# when ALPHA_S = 0.4
+# R_0_ALPHA_COMPONENT = 0 if ALPHA_S == 0.4 else np.power((4 * ALPHA_S / 2), 0.5)
+# r_0_calc = lambda beta:R_0_ALPHA_COMPONENT * np.power(beta, -0.5)
+r_1_calc = lambda beta: r_0_calc(beta) / math.e
+r_2_calc = lambda beta: r_0_calc(beta) * math.e
+b_calc = lambda beta: beta * r_2_calc(beta)
 
 bhanot_rudaz_head_calc  = lambda r: -(4/3) * (ALPHA_S / r)
 bhanot_rudaz_middle_calc = lambda b, r_0, r: b * math.log(r_0/r)
