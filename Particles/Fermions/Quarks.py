@@ -1,23 +1,103 @@
 from Fermion import Fermion
+from data import ParticleNames, particle_charges
 
 # Strong force mediated Fermions
 class Quark(Fermion):
     def __init__(self, mass, spin, charge, color):
-        super().__init__(mass, spin, charge, color)
-    NotImplemented()
+        self.color = color
+        super().__init__(mass, spin, charge)
 
+# Light Quarks
 class UpQuark(Quark):
-    NotImplemented()
+    def __init__(self, mass, spin, color):
+        super().__init__(mass, spin, particle_charges[ParticleNames.UP], color)
+        
+    def is_anti_of(quark: Quark):
+        return isinstance(quark, AntiUpQuark)
+    
+class DownQuark(Quark):
+    def __init__(self, mass, spin, color):
+        super().__init__(mass, spin, particle_charges[ParticleNames.DOWN], color)
+    
+    def is_anti_of(quark: Quark):
+        return isinstance(quark, AntiDownQuark)
+    
+class StrangeQuark(Quark):
+    def __init__(self, mass, spin, color):
+        super().__init__(mass, spin, particle_charges[ParticleNames.STRANGE], color)
+    
+    def is_anti_of(quark: Quark):
+        return isinstance(quark, AntiStrangeQuark)
+
+# Heavy Quarks
 
 class CharmQuark(Quark):
-    NotImplemented()
-
-class StrangeQuark(Quark):
-    NotImplemented()
-
-class TopQuark(Quark):
-    NotImplemented()
+    def __init__(self, mass, spin, color):
+        super().__init__(mass, spin, particle_charges[ParticleNames.CHARM], color)
+    
+    def is_anti_of(quark: Quark):
+        return isinstance(quark, AntiCharmQuark)
 
 class BottomQuark(Quark):
-    NotImplemented()
+    def __init__(self, mass, spin, color):
+        super().__init__(mass, spin, particle_charges[ParticleNames.BOTTOM], color)
+        
+    def is_anti_of(quark: Quark):
+        return isinstance(quark, AntiBottomQuark)
+        
+
+class TopQuark(Quark):
+    def __init__(self, mass, spin, color):
+        super().__init__(mass, spin, particle_charges[ParticleNames.TOP], color)
+
+    def is_anti_of(quark: Quark):
+        return isinstance(quark, AntiTopQuark)
+# Anti-quarks
+
+# Light Quarks
+class AntiUpQuark(Quark):
+    def __init__(self, mass, spin, color):
+        super().__init__(mass, spin, particle_charges[ParticleNames.UP], color)
+        
+    def is_anti_of(quark: Quark):
+        return isinstance(quark, UpQuark)   
+    
+    
+class AntiDownQuark(Quark):
+    def __init__(self, mass, spin, color):
+        super().__init__(mass, spin, particle_charges[ParticleNames.DOWN], color)
+        
+    def is_anti_of(quark: Quark):
+        return isinstance(quark, DownQuark)  
+
+
+class AntiStrangeQuark(Quark):
+    def __init__(self, mass, spin, color):
+        super().__init__(mass, spin, particle_charges[ParticleNames.STRANGE], color)
+        
+    def is_anti_of(quark: Quark):
+        return isinstance(quark, StrangeQuark)
+    
+    
+# Heavy Quarks
+class AntiCharmQuark(Quark):
+    def __init__(self, mass, spin, color):
+        super().__init__(mass, spin, particle_charges[ParticleNames.CHARM], color)
+        
+    def is_anti_of(quark: Quark):
+        return isinstance(quark, CharmQuark)
+
+class AntiBottomQuark(Quark):
+    def __init__(self, mass, spin, color):
+        super().__init__(mass, spin, particle_charges[ParticleNames.BOTTOM], color)
+        
+    def is_anti_of(quark: Quark):
+        return isinstance(quark, BottomQuark)        
+
+class AntiTopQuark(Quark):
+    def __init__(self, mass, spin, color):
+        super().__init__(mass, spin, particle_charges[ParticleNames.TOP], color)
+
+    def is_anti_of(quark: Quark):
+        return isinstance(quark, TopQuark)
 
