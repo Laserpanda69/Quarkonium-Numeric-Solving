@@ -14,6 +14,15 @@ class ParticleNames(Enum):
     STRANGEONIUM = "strangeonium"
     TOPONIUM = "toponium"
     BOTTOMONIUM = "bottomonium"
+    
+class ColorCharges(Enum):
+    RED = 2
+    GREEN = 3
+    BLUE = 4
+
+class PhysicalConstants(Enum):
+    QCD_RUNNING_COUPLING_CONATANT = 0.4
+    QCD_STRING_TENSTION = 0.18 #GeV^2
 
 
 particle_masses ={
@@ -22,3 +31,4 @@ particle_masses ={
         '1S': 2.9839
     }
 }
+
