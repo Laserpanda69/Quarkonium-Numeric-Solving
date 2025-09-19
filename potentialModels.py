@@ -1,10 +1,11 @@
 import math
 import numpy as np
-from data import ColorCharges, PhysicalConstants
+from data import ColorCharge, PhysicalConstants
 
 ALPHA_S = PhysicalConstants.QCD_RUNNING_COUPLING_CONATANT.value
-# CASIMIR_FACTOR = (len(ColorCharges)**2-1)/(2*len(ColorCharges))
-CASIMIR_FACTOR = 4/3
+color_charge_count = len(ColorCharge) / 2 #/2 removed the double count of including anti-colours
+CASIMIR_FACTOR = (color_charge_count**2-1)/(2*color_charge_count)
+# CASIMIR_FACTOR = 4/3
 
 print(f"QCD Runnning Constant = {ALPHA_S}")
 print(f"Casimir Factor = {CASIMIR_FACTOR}")

@@ -3,7 +3,7 @@ import scipy
 
 
 # GeV
-class ParticleNames(Enum):
+class ParticleName(Enum):
     UP = "up"
     DOWN = "down"
     STRANGE = "strange"
@@ -19,10 +19,15 @@ class ParticleNames(Enum):
     TOPONIUM = "toponium"
     BOTTOMONIUM = "bottomonium"
     
-class ColorCharges(Enum):
+class ColorCharge(Enum):
     RED = 2
     GREEN = 3
     BLUE = 4
+    ANTIRED = 1/RED
+    ANTIGREEN = 1/GREEN
+    ANTIBLUE = 1/BLUE
+    
+
 
 class PhysicalConstants(Enum):
     QCD_RUNNING_COUPLING_CONATANT = 0.4
@@ -31,14 +36,14 @@ class PhysicalConstants(Enum):
 # All masses in/converted to GeV for consistancy
 particle_masses ={
     'unit': "GeV",
-    ParticleNames.UP: 2.16/1000,#GeV +/-0.07 MeV
-    ParticleNames.DOWN: 4.70/1000,#GeV+/-0.07 MeV
-    ParticleNames.STRANGE: 3.49/1000,#GeV+/-0.07 MeV
-    ParticleNames.CHARM: 1.2730,#+/-0.0046 GeV
-    ParticleNames.TOP: 172,#+/- 0.31 GeV
-    ParticleNames.BOTTOM: 4.183,#+/-0.007GeV
+    ParticleName.UP: 2.16/1000,#GeV +/-0.07 MeV
+    ParticleName.DOWN: 4.70/1000,#GeV+/-0.07 MeV
+    ParticleName.STRANGE: 3.49/1000,#GeV+/-0.07 MeV
+    ParticleName.CHARM: 1.2730,#+/-0.0046 GeV
+    ParticleName.TOP: 172,#+/- 0.31 GeV
+    ParticleName.BOTTOM: 4.183,#+/-0.007GeV
 
-    ParticleNames.CHARMONIUM:{
+    ParticleName.CHARMONIUM:{
         'experimental':{
             '1S': 2.9839
         },
@@ -47,13 +52,13 @@ particle_masses ={
 }
 
 particle_charges = {
-    'unit': f"elementary charge e={scipy.e}",
+    'unit': f"elementary charge e={scipy.constants.e}",
     
-    ParticleNames.UP: 2/3,
-    ParticleNames.DOWN: -1/3,
-    ParticleNames.STRANGE: -1/3,
-    ParticleNames.CHARM: 2/3,
-    ParticleNames.TOP: 2/3,
-    ParticleNames.BOTTOM: -1/3,
+    ParticleName.UP: 2/3,
+    ParticleName.DOWN: -1/3,
+    ParticleName.STRANGE: -1/3,
+    ParticleName.CHARM: 2/3,
+    ParticleName.TOP: 2/3,
+    ParticleName.BOTTOM: -1/3,
 }
 

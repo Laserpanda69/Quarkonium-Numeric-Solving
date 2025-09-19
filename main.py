@@ -6,27 +6,25 @@ import wavefuncitons
 from wavefuncitons import corenell_wave_function
 
 from enum import Enum
-from data import ParticleNames, particle_masses
+from data import ParticleName, particle_masses, ColorCharge
 
 import numericalSolvers
+
+from Particles.Fermions.Quarks import *
 
 # https://pdg.lbl.gov/
 
 U0 = [0,1]
 initial_calibration_variable = 0.195
-
-QUARK_MASS = particle_masses[ParticleNames.CHARM]
-MESON_1S_MASS = particle_masses[ParticleNames.CHARMONIUM]['experimental']['1S']
-
-
-recpricol_reduced_mass = 1/QUARK_MASS + 1/QUARK_MASS
-REDUCED_MESON_MASS = 1/recpricol_reduced_mass
 r = np.linspace(0.0000001, 15, 1000)
 
-MESON_1S_ENERGY = particle_masses[ParticleNames.CHARMONIUM]['experimental']['1S'] - 2*particle_masses[ParticleNames.CHARM]
 
+quarks = [CharmQuark(1/2, ColorCharge.RED), CharmQuark(1/2, ColorCharge.ANTIRED)]
+MESON_1S_MASS = particle_masses[ParticleName.CHARMONIUM]['experimental']['1S']
+recpricol_reduced_mass = sum(1/quark.mass for quark in quarks)
+REDUCED_MESON_MASS = 1/recpricol_reduced_mass
+MESON_1S_ENERGY = MESON_1S_MASS - sum(quark.mass for quark in quarks)
 
-# beta, sol = recursive_staircase_solver(U0, alpha, epsilon_lower=init_beta, fixed_value=charmonium_energy_1S, layer=30)
 
 
 print("Calibrating")

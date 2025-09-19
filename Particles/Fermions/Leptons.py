@@ -1,4 +1,4 @@
-from Fermion import Fermion
+from .Fermion import Fermion
 
 class Lepton(Fermion):
     def __init__(self, mass, spin, charge):

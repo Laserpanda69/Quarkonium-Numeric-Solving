@@ -7,7 +7,7 @@ class Meson(Hadron, Boson):
     # Mesons are made of quark/anti_quark pairs
     def __innit__(self, quark: Quark, anit_quark: Quark):
         try:
-            assert(anit_quark.color  * quark.color == 1)
+            assert(anit_quark.color.value  * quark.color.value == 1)
         except:
             raise(f"Quarkonia must be two quarks of opposite color, not {anit_quark.color} and {quark.color}")
     
