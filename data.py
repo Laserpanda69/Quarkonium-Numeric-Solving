@@ -1,4 +1,6 @@
 from enum import Enum
+import scipy
+
 
 # GeV
 class ParticleNames(Enum):
@@ -22,7 +24,8 @@ class ColorCharges(Enum):
 
 class PhysicalConstants(Enum):
     QCD_RUNNING_COUPLING_CONATANT = 0.4
-    QCD_STRING_TENSTION = 0.18 #GeV^2
+    QCD_STRING_TENSTION = 0.18 #GeV^2_
+
 
 
 particle_masses ={
