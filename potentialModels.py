@@ -4,8 +4,8 @@ import numpy as np
 ALPHA_S = 0.4
 
 
-def cornell_potential(radii: list[float], alpha: float, beta: float) -> list[float]:
-    return -(4/3)*alpha/radii + beta*radii
+def cornell_potential(r: float, beta: float) -> list[float]:
+    return -(4/3)*ALPHA_S/r + beta*r
 
 
 r_0_calc = lambda beta: np.power((4 * ALPHA_S / 2), 0.5) * np.power(beta, -0.5)

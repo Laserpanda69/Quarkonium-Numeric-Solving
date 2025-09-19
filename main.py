@@ -29,12 +29,13 @@ charmonium_energy_1S = particle_masses[ParticleNames.CHARMONIUM]['1S'] - 2*parti
 
 # beta, sol = recursive_staircase_solver(U0, alpha, epsilon_lower=init_beta, fixed_value=charmonium_energy_1S, layer=30)
 
-wavefunction_arguments = (charmonium_cornell_alpha, initial_charmonium_cornell_beta,
+wavefunction_arguments = (initial_charmonium_cornell_beta,
     reduced_charmonium_mass, charmonium_energy_1S)
 
+print("Calibrating")
 charmonium_beta, sol = numericalSolvers.calibration_staircase(
         U0, r, corenell_wave_function, 
-        potential_arguments=(charmonium_cornell_alpha, charmonium_energy_1S, reduced_charmonium_mass),
+        potential_arguments=(charmonium_energy_1S, reduced_charmonium_mass),
         b_lower = initial_charmonium_cornell_beta, 
         flight = 30
     )
@@ -50,12 +51,13 @@ N = 3
 
 line_styles = ['dotted', 'dashdot', 'loosley dashed']
 
+print("Solving")
 wfns = []
 for n in [1, 2, 3, 5]:
     for l in range(0, n):
         E, sol = numericalSolvers.solve_for_energy(
             U0, r, corenell_wave_function, n,
-            potential_arguments=(l, charmonium_cornell_alpha, charmonium_beta, reduced_charmonium_mass),
+            potential_arguments=(l, charmonium_beta, reduced_charmonium_mass),
             epsilon_lower = last_energy_value + offset, 
             flight = 30
         )
