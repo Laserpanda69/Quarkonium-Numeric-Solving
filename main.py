@@ -48,10 +48,10 @@ offset = 0.01
 print(f"charmonium_energy_1S = {charmonium_energy_1S}")
 N = 3
 
-line_styles = ['solid', 'dotted', 'dashdot', 'loosley dashed']
+line_styles = ['dotted', 'dashdot', 'loosley dashed']
 
 wfns = []
-for n in [2, 3]:
+for n in [1, 2, 3, 5]:
     for l in range(0, n):
         E, sol = numericalSolvers.solve_for_energy(
             U0, r, corenell_wave_function, n,
@@ -67,7 +67,7 @@ for n in [2, 3]:
             print(f"{n}{l} has a PDF with a peak amplitude of {max(pdf)}")
             continue
         
-        plt.plot(r, pdf, linestyle = line_styles[l])
+        plt.plot(r, pdf, linestyle = line_styles[l%len(line_styles)])
         print(f"E_{n}{l} = {E}")
         # print(f"M_{n}{l} = {E+2*charm_quark_mass}")
         last_energy_value = E
