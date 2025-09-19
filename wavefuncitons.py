@@ -18,17 +18,17 @@ def square_wavefunction(wave_function: list[float]) -> list[float]:
     return pdf
 
 def normalise_wavefunction(
+        r_space: list[float],
         probability_density_function: list[float], 
         wave_function: list[float], 
-        v: list[float], 
-        radii: list[float]
+        differentiated_wave_function: list[float], 
     ) -> list[float]:
     
-    norm = scipy.integrate.simpson(probability_density_function, radii)
+    norm = scipy.integrate.simpson(probability_density_function, r_space)
     recprical_norm = 1/norm
     root_reciprical_norm = 1/np.sqrt(norm)
     probability_density_function = probability_density_function*recprical_norm
     wave_function = wave_function*root_reciprical_norm
-    v = v *root_reciprical_norm
+    differentiated_wave_function = differentiated_wave_function *root_reciprical_norm
     
-    return probability_density_function, wave_function, v
+    return probability_density_function, wave_function, differentiated_wave_function

@@ -1,11 +1,16 @@
 import math
 import numpy as np
+from data import ColorCharges, PhysicalConstants
 
-ALPHA_S = 0.4
+ALPHA_S = PhysicalConstants.QCD_RUNNING_COUPLING_CONATANT.value
+# CASIMIR_FACTOR = (len(ColorCharges)**2-1)/(2*len(ColorCharges))
+CASIMIR_FACTOR = 4/3
 
+print(f"QCD Runnning Constant = {ALPHA_S}")
+print(f"Casimir Factor = {CASIMIR_FACTOR}")
 
-def cornell_potential(r: float, beta: float) -> list[float]:
-    return -(4/3)*ALPHA_S/r + beta*r
+def cornell_potential(r: float, qcd_string_tentsion: float) -> list[float]:
+    return -CASIMIR_FACTOR*ALPHA_S/r + qcd_string_tentsion*r
 
 
 r_0_calc = lambda beta: np.power((4 * ALPHA_S / 2), 0.5) * np.power(beta, -0.5)

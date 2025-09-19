@@ -49,11 +49,11 @@ offset = 0.01
 print(f"charmonium_energy_1S = {charmonium_energy_1S}")
 N = 3
 
-line_styles = ['dotted', 'dashdot', 'loosley dashed']
+line_styles = ['dotted', 'dashdot', 'dashed']
 
 print("Solving")
 wfns = []
-for n in [1, 2, 3, 5]:
+for n in [1, 2, 3, 4, 5, 6]:
     for l in range(0, n):
         E, sol = numericalSolvers.solve_for_energy(
             U0, r, corenell_wave_function, n,
@@ -65,9 +65,10 @@ for n in [1, 2, 3, 5]:
         v= sol[:,1]
                 
         pdf = wavefuncitons.square_wavefunction(u)
-        if max(pdf) > 2:
-            print(f"{n}{l} has a PDF with a peak amplitude of {max(pdf)}")
-            continue
+        pdf, u, v = wavefuncitons.normalise_wavefunction(r, pdf, u, v)
+        # if max(pdf) > 2:
+        #     print(f"{n}{l} has a PDF with a peak amplitude of {max(pdf)}")
+        #     continue
         
         plt.plot(r, pdf, linestyle = line_styles[l%len(line_styles)])
         print(f"E_{n}{l} = {E}")
