@@ -104,7 +104,7 @@ for n in range(1, N+1):
                     pdf_turning_point_peaks.pop(i)
                     turning_points['positions'].pop(i)
 
-            plt.scatter(turning_points['positions'], pdf_turning_point_peaks, color = color)
+            plt.scatter(turning_points['positions'], pdf_turning_point_peaks, color = color, linewidth = 2)
             
             min_tp_peak = min(pdf_turning_point_peaks)
             min_tp_peak_line = [min_tp_peak]*len(r_space)
