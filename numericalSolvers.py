@@ -126,7 +126,7 @@ def energy_staircase(u0, r_space, wave_function, potential_arguments: tuple, eps
 
 def calibrate(u0, r_space, wave_function, potential_arguments: tuple, initial_calibration_variable, step_size = 0.015, steps_taken = 0, flight = 5, energy_offset = 0.01):
     
-    limit = 100
+    limit = 1
     offset = 0.01
     for _ in range(limit):
         calibrated_variable, numeric_solution = calibration_staircase(u0, r_space, wave_function, potential_arguments, initial_calibration_variable, step_size, steps_taken, flight)

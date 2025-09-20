@@ -41,8 +41,8 @@ initial_calibration_var_bottomonium_cornell = 0.006
 # User set variables
 N = 1
 F = 30
-initial_calibration_variable = initial_calibration_var_bottomonium_cornell
-meson = bottomonium_1S
+initial_calibration_variable = initial_calibration_var_charmonium_cornell
+meson = charmonium_1S
 # /User set variables
 
 # Grey line at 0
