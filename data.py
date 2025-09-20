@@ -41,10 +41,17 @@ particle_masses ={
     ParticleName.BOTTOM: 4.183,#+/-0.007GeV
 
     ParticleName.CHARMONIUM:{
-        'experimental':{
-            '1S': 2.9839
+        'reference':{
+            '1S': 2.9839#GeV
         },
         'staircase':{}
+    },
+    
+    ParticleName.BOTTOMONIUM:{
+        'reference':{
+            '1S': 9.3987#Gev +/- 2.0MeV
+        }
+        
     }
 }
 

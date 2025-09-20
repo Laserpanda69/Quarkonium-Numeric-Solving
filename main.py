@@ -17,12 +17,22 @@ from Particles.Hadrons.Mesons import Meson, Quarkonia
 # https://pdg.lbl.gov/
 
 U0 = [0,1]
-initial_calibration_variable = 0.195
+initial_calibration_variable = 2
 r = np.linspace(0.0000001, 15, 1000)
 
+# Fix this so 1S state can be entered
 charmonium = Quarkonia("10", CharmQuark(1/2, ColorCharge.RED), AntiCharmQuark(1/2, ColorCharge.RED))
-charmonium.set_mass(particle_masses[ParticleName.CHARMONIUM]['experimental']['1S'])
-MESON_1S_MASS = charmonium.mass
+charmonium.set_mass(particle_masses[ParticleName.CHARMONIUM]['reference']['1S'])
+initial_calibration_var_charmonium_cornell = 0.195
+
+
+bottomonium = Quarkonia("10", BottomQuark(1/2, ColorCharge.RED), AntiBottomQuark(1/2, ColorCharge.RED))
+bottomonium.set_mass(particle_masses[ParticleName.BOTTOMONIUM]['reference']['1S'])
+initial_calibration_var_bottomonium_cornell = 1.5
+
+initial_calibration_variable = initial_calibration_var_bottomonium_cornell
+
+MESON_1S_MASS = bottomonium.mass
 recpricol_reduced_mass = sum(1/quark.mass for quark in charmonium.quarks)
 REDUCED_MESON_MASS = 1/recpricol_reduced_mass
 MESON_1S_ENERGY = MESON_1S_MASS - sum(quark.mass for quark in charmonium.quarks)
@@ -34,13 +44,13 @@ calibrated_variable, sol = numericalSolvers.calibration_staircase(
         U0, r, corenell_wave_function, 
         potential_arguments= (MESON_1S_ENERGY, REDUCED_MESON_MASS),
         b_lower = initial_calibration_variable, 
-        flight = 30
+        flight = 50
     )
-
+print(f"calibration got {calibrated_variable}")
 u, v= sol[:,0], sol[:,1]
 pdf = wavefuncitons.square_wavefunction(u)
 pdf, u, v = wavefuncitons.normalise_wavefunction(r, pdf, u, v)
-plt.plot(r, pdf)
+plt.plot(r, pdf, label = "calibration")
 
 last_energy_value = MESON_1S_ENERGY - 0.1
 offset = 0.01
@@ -51,7 +61,7 @@ line_styles = ['dotted', 'dashdot', 'dashed']
 
 print("Solving")
 wfns = []
-for n in [1, 2, 3]:
+for n in [0, 1, 2]:
     for l in range(0, n):
         E, sol = numericalSolvers.solve_for_energy(
             U0, r, corenell_wave_function, n,
