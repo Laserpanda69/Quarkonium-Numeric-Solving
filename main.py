@@ -11,7 +11,7 @@ import numericalSolvers as Solvers
 
 from Particles.Fermions.Quarks import *
 from Particles.Hadrons.Hadron import Hadron
-from Particles.Hadrons.Mesons import Meson, Quarkonia
+from Particles.Hadrons import Mesons 
 
 import numericalSolvers
 
@@ -26,30 +26,31 @@ REFERENCE = 'reference'
 STAIRCASE = 'staircase'
 U0 = [0,1]
 
-N = 3
-F = 30
-initial_calibration_variable = 2
+
 r_space = np.linspace(0.0000001, 15, 1000)
 
 # Fix this so 1S state can be entered
-charmonium = Quarkonia("1S", CharmQuark(1/2, ColorCharge.RED), AntiCharmQuark(1/2, ColorCharge.RED))
-charmonium.set_mass(particle_masses[ParticleName.CHARMONIUM][REFERENCE][GROUND_STATE])
+charmonium = Mesons.Charmonium(GROUND_STATE)
 initial_calibration_var_charmonium_cornell = 0.195
 
 
-bottomonium = Quarkonia("10", BottomQuark(1/2, ColorCharge.RED), AntiBottomQuark(1/2, ColorCharge.RED))
+bottomonium = Mesons.Quarkonia(GROUND_STATE, BottomQuark(1/2, ColorCharge.RED), AntiBottomQuark(1/2, ColorCharge.RED))
 bottomonium.set_mass(particle_masses[ParticleName.BOTTOMONIUM][REFERENCE][GROUND_STATE])
 initial_calibration_var_bottomonium_cornell = 1.5
 
+# User set variables
+N = 3
+F = 30
 initial_calibration_variable = initial_calibration_var_charmonium_cornell
-
 MESON_1S_MASS = charmonium.mass
+# /User set variables
+
+
 recpricol_reduced_mass = sum(1/quark.mass for quark in charmonium.quarks)
 REDUCED_MESON_MASS = 1/recpricol_reduced_mass
 MESON_1S_ENERGY = MESON_1S_MASS - sum(quark.mass for quark in charmonium.quarks)
 
 plt.plot(r_space, [0]*len(r_space), linestyle = line_styles_dict[LineStyle.LOOSELY_DASHED], color = "grey")
-
 
 print("Calibrating")
 calibrated_variable, sol = numericalSolvers.calibration_staircase(
@@ -58,6 +59,7 @@ calibrated_variable, sol = numericalSolvers.calibration_staircase(
         b_lower = initial_calibration_variable, 
         flight = F
     )
+
 print(f"calibration got {calibrated_variable}")
 u, v= sol[:,0], sol[:,1]
 pdf = wfns.square_wavefunction(u)
