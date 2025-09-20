@@ -24,7 +24,7 @@ initial_calibration_variable = 2
 r = np.linspace(0.0000001, 15, 1000)
 
 # Fix this so 1S state can be entered
-charmonium = Quarkonia("10", CharmQuark(1/2, ColorCharge.RED), AntiCharmQuark(1/2, ColorCharge.RED))
+charmonium = Quarkonia("1S", CharmQuark(1/2, ColorCharge.RED), AntiCharmQuark(1/2, ColorCharge.RED))
 charmonium.set_mass(particle_masses[ParticleName.CHARMONIUM]['reference']['1S'])
 initial_calibration_var_charmonium_cornell = 0.195
 

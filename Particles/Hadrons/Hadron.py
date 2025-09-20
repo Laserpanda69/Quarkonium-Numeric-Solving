@@ -8,9 +8,10 @@ import regex as re
 class Hadron(Particle):
     def __init__(self, state:str, *quarks):
         self.principle_number, self.angular_momentum_number= state
+        if isinstance(self.angular_momentum_number, str): self.angular_momentum_number = self.angular_momentum_number.upper()
         
-        if not re.match('\d',  self.angular_momentum_number):
-            match self.angular_momentum_number.upper:
+        if not re.match(r'\d',  self.angular_momentum_number):
+            match self.angular_momentum_number:
                 case 'S':
                     self.angular_momentum_number = 1
                 case 'P':
@@ -20,7 +21,8 @@ class Hadron(Particle):
                 case 'F':
                     self.angular_momentum_number = 4
                 case _:
-                    raise Exception(f"{self.angular_momentum_number} out of range of know values of angular momentum")
+                    self.angular_momentum_number = ord(self.angular_momentum_number) - (ord('G') + 5)
+                    # raise Exception(f"{self.angular_momentum_number} out of range of know values of angular momentum")
         
         self.quarks = quarks
         self.quark_mass = sum(q.mass for q in self.quarks)
