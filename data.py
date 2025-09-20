@@ -23,9 +23,6 @@ class ColorCharge(Enum):
     RED = 2
     GREEN = 3
     BLUE = 4
-    ANTIRED = 1/RED
-    ANTIGREEN = 1/GREEN
-    ANTIBLUE = 1/BLUE
     
 
 

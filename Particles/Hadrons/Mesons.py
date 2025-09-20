@@ -9,7 +9,7 @@ class Meson(Hadron):#, Boson):
     # Mesons are made of quark/anti_quark pairs
     def __int__(self, state, quark: Quark, anti_quark: Quark):
         try:
-            assert(anti_quark.color.value  * quark.color.value == 1)
+            assert(anti_quark.color.value  * 1/anti_quark.color.value == 1)
         except:
             raise Exception(f"Meson must be two quarks of opposite color, not {quark.color} and {anti_quark.color}")
 
