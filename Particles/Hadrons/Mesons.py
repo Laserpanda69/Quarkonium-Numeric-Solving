@@ -1,21 +1,27 @@
-from Hadron import Hadron
-from Bosons import Boson
-from Fermions.Quarks import Quark
+from .Hadron import Hadron
+from Particles.Bosons import Boson
+from Particles.Fermions.Quarks import Quark
 
 # 2 quark particles
-class Meson(Hadron, Boson):
+
+class Meson(Hadron):#, Boson):
+
     # Mesons are made of quark/anti_quark pairs
-    def __innit__(self, quark: Quark, anit_quark: Quark):
+    def __int__(self, state, quark: Quark, anti_quark: Quark):
         try:
-            assert(anit_quark.color.value  * quark.color.value == 1)
+            assert(anti_quark.color.value  * quark.color.value == 1)
         except:
-            raise(f"Quarkonia must be two quarks of opposite color, not {anit_quark.color} and {quark.color}")
-    
+            raise Exception(f"Meson must be two quarks of opposite color, not {quark.color} and {anti_quark.color}")
+
         self.quark = quark
-        self.anti_quark = anit_quark
-        super().__innit__(quark, anit_quark)
+        self.anti_quark = anti_quark
+        Hadron.__init__(self, state, quark, anti_quark)
 
 
 class Quarkonia(Meson):
-    def __innit__(self, quark, anit_quark):
-        super().__innit__(quark, anit_quark)
+    def __init__(self, state, quark, anti_quark):
+        try:
+            assert(quark.is_anti_of(anti_quark))
+        except:
+            raise Exception(f"Quarkonia must be two quarks of like flavor/anti-flavor, not {type(quark)} and {type(anti_quark)}")
+        Hadron.__init__(self, state, quark, anti_quark)

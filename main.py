@@ -11,6 +11,8 @@ from data import ParticleName, particle_masses, ColorCharge
 import numericalSolvers
 
 from Particles.Fermions.Quarks import *
+from Particles.Hadrons.Hadron import Hadron
+from Particles.Hadrons.Mesons import Meson, Quarkonia
 
 # https://pdg.lbl.gov/
 
@@ -18,12 +20,21 @@ U0 = [0,1]
 initial_calibration_variable = 0.195
 r = np.linspace(0.0000001, 15, 1000)
 
+# quarks = [CharmQuark(1/2, ColorCharge.RED), CharmQuark(1/2, ColorCharge.ANTIRED)]
+# MESON_1S_MASS = particle_masses[ParticleName.CHARMONIUM]['experimental']['1S']
+# recpricol_reduced_mass = sum(1/quark.mass for quark in quarks)
+# REDUCED_MESON_MASS = 1/recpricol_reduced_mass
+# MESON_1S_ENERGY = MESON_1S_MASS - sum(quark.mass for quark in quarks)
 
-quarks = [CharmQuark(1/2, ColorCharge.RED), CharmQuark(1/2, ColorCharge.ANTIRED)]
-MESON_1S_MASS = particle_masses[ParticleName.CHARMONIUM]['experimental']['1S']
-recpricol_reduced_mass = sum(1/quark.mass for quark in quarks)
+# anti-color = anti-quark of colour. Therefore do not need anticolors in data as can just test if the particle is anti itself
+# Instead of testing for anti*non-anti and color* anti-color
+# Should sest anti*non-anti and anti.color == nonanti.color
+charmonium = Quarkonia("10", CharmQuark(1/2, ColorCharge.RED), AntiCharmQuark(1/2, ColorCharge.ANTIRED))
+charmonium.set_mass(particle_masses[ParticleName.CHARMONIUM]['experimental']['1S'])
+MESON_1S_MASS = charmonium.mass
+recpricol_reduced_mass = sum(1/quark.mass for quark in charmonium.quarks)
 REDUCED_MESON_MASS = 1/recpricol_reduced_mass
-MESON_1S_ENERGY = MESON_1S_MASS - sum(quark.mass for quark in quarks)
+MESON_1S_ENERGY = MESON_1S_MASS - sum(quark.mass for quark in charmonium.quarks)
 
 
 

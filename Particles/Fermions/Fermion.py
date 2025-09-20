@@ -7,7 +7,7 @@ class Fermion(Particle):
         try:
             assert((spin*2).is_integer)
         except:
-            raise(f"Fermions must have half-integer spin, not {spin}")
+            raise Exception(f"Fermions must have half-integer spin, not {spin}")
         
         # None strong force mediated particles
 
