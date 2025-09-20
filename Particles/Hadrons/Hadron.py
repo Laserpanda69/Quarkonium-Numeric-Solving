@@ -13,13 +13,15 @@ class Hadron(Particle):
         if not re.match(r'\d',  self.angular_momentum_number):
             self.angular_momentum_number = super().convert_to_angular_momentum_number(self.angular_momentum_number)
 
-        self.quarks = quarks
-        self.quark_mass = sum(q.mass for q in self.quarks)
+        self.quarks:list = quarks
+        self.quark_mass:float = sum(q.mass for q in self.quarks)
         
         mass = None
         spin = sum(q.spin for q in self.quarks)
         charge = sum(q.charge for q in self.quarks)
         super().__init__(mass, spin, charge)
+        
+        self.reduced_mass = 1/sum(1/quark.mass for quark in self.quarks)
         
     def set_binding_energy(self, binding_energy: float):
         self.binding_energy = binding_energy

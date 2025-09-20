@@ -123,6 +123,23 @@ def energy_staircase(u0, r_space, wave_function, potential_arguments: tuple, eps
         
     return gamma, scipy.integrate.odeint(wave_function, u0, r_space, args=(l,beta, reduced_mass, gamma))
 
+
+def calibrate(u0, r_space, wave_function, potential_arguments: tuple, initial_calibration_variable, step_size = 0.015, steps_taken = 0, flight = 5, energy_offset = 0.01):
+    
+    calibrated_variable, numeric_solution = calibration_staircase(u0, r_space, wave_function, potential_arguments, initial_calibration_variable, step_size, steps_taken, flight)
+    u = numeric_solution[:,0]
+    v = numeric_solution[:,1]
+
+    
+    nodes_tps  = nodes_turning_points(u, v, r_space)
+    nodes = nodes_tps.pop('nodes')
+    turning_points = nodes_tps.pop('turning_points')
+
+    pdf = wfns.square_wavefunction(u)
+    pdf, u, v = wfns.normalise_wavefunction(r_space, pdf, u, v)
+    
+    return calibrated_variable, (pdf, u ,v), (nodes, turning_points)
+
 def solve_for_energy(u0, r_space, wave_function, n, potential_arguments: tuple, epsilon_lower, step_size = 0.015, steps_taken = 0, flight = 5, energy_offset = 0.01):
     
     energy, numeric_solution = energy_staircase(u0, r_space, wave_function, potential_arguments, epsilon_lower, step_size, steps_taken, flight)
@@ -133,19 +150,6 @@ def solve_for_energy(u0, r_space, wave_function, n, potential_arguments: tuple, 
     nodes_tps  = nodes_turning_points(u, v, r_space)
     nodes = nodes_tps.pop('nodes')
     turning_points = nodes_tps.pop('turning_points')
-    # print(n)
-    # print(f"{nodes['count']}/{n-1}")#, nodes['positions'][0]*(radii[-1]/len(radii)))
-    # print(f"{turning_points['count']}/{n}")#, turning_points['positions'][0]*(radii[-1]/len(radii)))
-    
-    
-    # node_location = nodes['positions'][0]*(radii[-1]/len(radii))
-    # print(u[int(node_location)])
-    # print(u[int(node_location-10):int(node_location+10)])
-    # # If a solution has been found that dose not meet these conditions, it's energy value is too low for the given state
-
-    # # if node_count != n-1 or turning_point_count != n:
-    # #     return energy_staircase(u0, radii, wave_function, potential_arguments, energy + energy_offset, step_size, steps_taken, flight)
-    
 
     pdf = wfns.square_wavefunction(u)
     pdf, u, v = wfns.normalise_wavefunction(r_space, pdf, u, v)

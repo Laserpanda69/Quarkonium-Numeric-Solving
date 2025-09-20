@@ -5,9 +5,9 @@
 
 class Particle():
     def __init__(self, mass: float, spin: float, charge: float):
-        self.mass = mass
-        self.spin = spin
-        self.charge = charge
+        self.mass:float = mass
+        self.spin:float = spin
+        self.charge:float = charge
         
         
     def is_anti_of(other_particle):

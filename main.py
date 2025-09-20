@@ -32,43 +32,39 @@ r_space = np.linspace(0.0000001, 15, 1000)
 # Fix this so 1S state can be entered
 charmonium = Mesons.Charmonium(GROUND_STATE)
 initial_calibration_var_charmonium_cornell = 0.195
-
-
-bottomonium = Mesons.Quarkonia(GROUND_STATE, BottomQuark(1/2, ColorCharge.RED), AntiBottomQuark(1/2, ColorCharge.RED))
-bottomonium.set_mass(particle_masses[ParticleName.BOTTOMONIUM][REFERENCE][GROUND_STATE])
-initial_calibration_var_bottomonium_cornell = 1.5
+bottomonium = Mesons.Bottomonium(GROUND_STATE)
+initial_calibration_var_bottomonium_cornell = 0.1
 
 # User set variables
 N = 3
 F = 30
 initial_calibration_variable = initial_calibration_var_charmonium_cornell
-MESON_1S_MASS = charmonium.mass
+meson = charmonium
 # /User set variables
 
-
-recpricol_reduced_mass = sum(1/quark.mass for quark in charmonium.quarks)
-REDUCED_MESON_MASS = 1/recpricol_reduced_mass
-MESON_1S_ENERGY = MESON_1S_MASS - sum(quark.mass for quark in charmonium.quarks)
+MESON_1S_MASS = meson.mass
+REDUCED_MESON_MASS = meson.reduced_mass
+MESON_1S_ENERGY = meson.binding_energy
 
 plt.plot(r_space, [0]*len(r_space), linestyle = line_styles_dict[LineStyle.LOOSELY_DASHED], color = "grey")
 
 print("Calibrating")
-calibrated_variable, sol = numericalSolvers.calibration_staircase(
+calibrated_variable, sol, points_of_interest = numericalSolvers.calibrate(
         U0, r_space, corenell_wave_function, 
         potential_arguments= (MESON_1S_ENERGY, REDUCED_MESON_MASS),
-        b_lower = initial_calibration_variable, 
+        initial_calibration_variable = initial_calibration_variable, 
         flight = F
     )
 
 print(f"calibration got {calibrated_variable}")
-u, v= sol[:,0], sol[:,1]
-pdf = wfns.square_wavefunction(u)
-pdf, u, v = wfns.normalise_wavefunction(r_space, pdf, u, v)
+pdf, u, v = sol
 plt.plot(r_space, pdf, color = 'magenta', linestyle = line_styles_dict[LineStyle.LOOSELY_DASHDOTTED], linewidth = 4, label = "calibration")
 
 last_energy_value = MESON_1S_ENERGY - 0.1
 offset = 0.01
-print(f"charmonium_energy_1S = {MESON_1S_ENERGY}")
+print(f"numerically solved charmonium_energy_1S = {MESON_1S_ENERGY}")
+print(f"reference charmonium_energy_1S = {MESON_1S_ENERGY}")
+print(f"numerically solved charmonium_energy_1S = {MESON_1S_ENERGY}")
 
 print("Solving")
 color_cycle = plt.rcParams["axes.prop_cycle"].by_key()["color"]

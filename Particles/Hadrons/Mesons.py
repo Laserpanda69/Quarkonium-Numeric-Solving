@@ -42,10 +42,17 @@ class Quarkonia(Meson):
         except:
             raise Exception(f"Quarkonia must be two quarks of like flavor/anti-flavor, not {type(quark)= } and {type(anti_quark)= }")
         Hadron.__init__(self, state, quark, anti_quark)
-
+        
 class Charmonium(Quarkonia):
     def __init__(self, state):
         super().__init__(state, CharmQuark(1/2, ColorCharge.RED), AntiCharmQuark(1/2, ColorCharge.RED))
         
         if state:
-            self.set_mass(particle_masses[ParticleName.CHARMONIUM][REFERENCE][GROUND_STATE])
+            self.set_mass(particle_masses[ParticleName.CHARMONIUM][REFERENCE][state])
+            
+class Bottomonium(Quarkonia):
+    def __init__(self, state):
+        super().__init__(state, BottomQuark(1/2, ColorCharge.RED), AntiBottomQuark(1/2, ColorCharge.RED))
+        
+        if state:
+            self.set_mass(particle_masses[ParticleName.BOTTOMONIUM][REFERENCE][state])
