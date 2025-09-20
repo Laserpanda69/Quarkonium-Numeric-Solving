@@ -126,20 +126,32 @@ def energy_staircase(u0, r_space, wave_function, potential_arguments: tuple, eps
 
 def calibrate(u0, r_space, wave_function, potential_arguments: tuple, initial_calibration_variable, step_size = 0.015, steps_taken = 0, flight = 5, energy_offset = 0.01):
     
-    calibrated_variable, numeric_solution = calibration_staircase(u0, r_space, wave_function, potential_arguments, initial_calibration_variable, step_size, steps_taken, flight)
-    u = numeric_solution[:,0]
-    v = numeric_solution[:,1]
+    limit = 100
+    offset = 0.01
+    for _ in range(limit):
+        calibrated_variable, numeric_solution = calibration_staircase(u0, r_space, wave_function, potential_arguments, initial_calibration_variable, step_size, steps_taken, flight)
+        u = numeric_solution[:,0]
+        v = numeric_solution[:,1]
 
+        
+        nodes_tps  = nodes_turning_points(u, v, r_space)
+        nodes = nodes_tps.pop('nodes')
+        turning_points = nodes_tps.pop('turning_points')
+        if turning_points['count'] < 3:
+            pdf = wfns.square_wavefunction(u)
+            pdf, u, v = wfns.normalise_wavefunction(r_space, pdf, u, v)
     
-    nodes_tps  = nodes_turning_points(u, v, r_space)
-    nodes = nodes_tps.pop('nodes')
-    turning_points = nodes_tps.pop('turning_points')
-
-    pdf = wfns.square_wavefunction(u)
-    pdf, u, v = wfns.normalise_wavefunction(r_space, pdf, u, v)
+            return calibrated_variable, (pdf, u ,v), (nodes, turning_points)
+        
+        calibrated_variable += offset
+        
+    else:
+        pdf = wfns.square_wavefunction(u)
+        pdf, u, v = wfns.normalise_wavefunction(r_space, pdf, u, v)
     
-    return calibrated_variable, (pdf, u ,v), (nodes, turning_points)
-
+        return calibrated_variable, (pdf, u ,v), (nodes, turning_points)
+        
+        
 def solve_for_energy(u0, r_space, wave_function, n, potential_arguments: tuple, epsilon_lower, step_size = 0.015, steps_taken = 0, flight = 5, energy_offset = 0.01):
     
     energy, numeric_solution = energy_staircase(u0, r_space, wave_function, potential_arguments, epsilon_lower, step_size, steps_taken, flight)

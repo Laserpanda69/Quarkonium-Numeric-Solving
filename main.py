@@ -30,28 +30,29 @@ U0 = [0,1]
 r_space = np.linspace(0.0000001, 15, 1000)
 
 # Fix this so 1S state can be entered
-charmonium = Mesons.Charmonium(GROUND_STATE)
+charmonium_1S = Mesons.Charmonium(GROUND_STATE)
 initial_calibration_var_charmonium_cornell = 0.195
-bottomonium = Mesons.Bottomonium(GROUND_STATE)
-initial_calibration_var_bottomonium_cornell = 0.1
+
+bottomonium_1S = Mesons.Bottomonium(GROUND_STATE)
+initial_calibration_var_bottomonium_cornell = 0.006
+# bottomonium = Mesons.Toponium(GROUND_STATE)
+# initial_calibration_var_toponium_cornell = 0.1
 
 # User set variables
-N = 3
+N = 1
 F = 30
-initial_calibration_variable = initial_calibration_var_charmonium_cornell
-meson = charmonium
+initial_calibration_variable = initial_calibration_var_bottomonium_cornell
+meson = bottomonium_1S
 # /User set variables
 
-MESON_1S_MASS = meson.mass
-REDUCED_MESON_MASS = meson.reduced_mass
-MESON_1S_ENERGY = meson.binding_energy
-
+# Grey line at 0
 plt.plot(r_space, [0]*len(r_space), linestyle = line_styles_dict[LineStyle.LOOSELY_DASHED], color = "grey")
 
+# Calibration
 print("Calibrating")
 calibrated_variable, sol, points_of_interest = numericalSolvers.calibrate(
         U0, r_space, corenell_wave_function, 
-        potential_arguments= (MESON_1S_ENERGY, REDUCED_MESON_MASS),
+        potential_arguments= (meson.binding_energy, meson.reduced_mass),
         initial_calibration_variable = initial_calibration_variable, 
         flight = F
     )
@@ -60,11 +61,10 @@ print(f"calibration got {calibrated_variable}")
 pdf, u, v = sol
 plt.plot(r_space, pdf, color = 'magenta', linestyle = line_styles_dict[LineStyle.LOOSELY_DASHDOTTED], linewidth = 4, label = "calibration")
 
-last_energy_value = MESON_1S_ENERGY - 0.1
+
+# Numerical solving of exciterd states
+last_energy_value = meson.binding_energy - 0.1
 offset = 0.01
-print(f"numerically solved charmonium_energy_1S = {MESON_1S_ENERGY}")
-print(f"reference charmonium_energy_1S = {MESON_1S_ENERGY}")
-print(f"numerically solved charmonium_energy_1S = {MESON_1S_ENERGY}")
 
 print("Solving")
 color_cycle = plt.rcParams["axes.prop_cycle"].by_key()["color"]
@@ -72,7 +72,7 @@ for n in range(1, N+1):
     for l in range(0, n):
         E, sol, points_of_interest = numericalSolvers.solve_for_energy(
             U0, r_space, corenell_wave_function, n,
-            potential_arguments=(l, calibrated_variable, REDUCED_MESON_MASS),
+            potential_arguments=(l, calibrated_variable, meson.reduced_mass),
             epsilon_lower = last_energy_value + offset, 
             flight = F
         )
@@ -85,6 +85,12 @@ for n in range(1, N+1):
         
         pdf_maxima = 0
         # pdf_maximak_line = []
+        
+        if n == 1:
+            print(f"numerically solved meson ground state energy = {meson.binding_energy}")
+            print(f"reference meson energy = {meson.binding_energy}")
+            print(f"Delta = {meson.binding_energy - E}")
+            print("")
 
         if l == 0:
             pdf_turning_point_peaks = wfns.find_pdf_peaks(r_space, pdf, turning_points['positions'])
