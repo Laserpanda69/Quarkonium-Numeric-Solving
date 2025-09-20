@@ -84,15 +84,18 @@ for n in range(1, N+1):
         color = color_cycle[n-1]
         linestyle = line_styles_list[l]
         plt.plot(r_space, pdf, color = color, linestyle = linestyle, label = f"{n}{l}")
+        
+        pdf_maxima = 0
+        # pdf_maximak_line = []
 
         if l == 0:
             pdf_turning_point_peaks = wfns.find_pdf_peaks(r_space, pdf, turning_points['positions'])
             
-            plt.scatter(turning_points['positions'], pdf_turning_point_peaks, color = color, linewidth = 2)
+            plt.scatter(turning_points['positions'], pdf_turning_point_peaks, color = color, linewidths= .5)
 
-            max_tp_peak = max(pdf_turning_point_peaks)
-            max_tp_peak_line = [max_tp_peak]*len(r_space)
-            plt.plot(r_space, max_tp_peak_line, 
+            pdf_maxima = max(pdf_turning_point_peaks)
+            pdf_maxima_line = [pdf_maxima]*len(r_space)
+            plt.plot(r_space, pdf_maxima_line, 
                 linestyle = line_styles_dict[LineStyle.LOOSELY_DOTTED], color = color, alpha = 0.4)
                 
         elif l == n-1:
@@ -104,14 +107,14 @@ for n in range(1, N+1):
                     pdf_turning_point_peaks.pop(i)
                     turning_points['positions'].pop(i)
 
-            plt.scatter(turning_points['positions'], pdf_turning_point_peaks, color = color, linewidth = 2)
+            plt.scatter(turning_points['positions'], pdf_turning_point_peaks, color = color, linewidths= .5)
             
             min_tp_peak = min(pdf_turning_point_peaks)
             min_tp_peak_line = [min_tp_peak]*len(r_space)
             plt.plot(r_space, min_tp_peak_line, 
                 linestyle = line_styles_dict[LineStyle.LOOSELY_DOTTED], color = color, alpha = 0.4)
 
-            
+            plt.fill_between(r_space, min_tp_peak_line, pdf_maxima_line, where=(min_tp_peak < pdf_maxima_line), color=color, alpha=0.1)
             
 
 
