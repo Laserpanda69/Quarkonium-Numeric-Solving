@@ -16,7 +16,7 @@ from Particles.Hadrons import Mesons
 import numericalSolvers
 
 from wavefuncitons import corenell_wave_function, bhanot_rudaz_wave_function
-from potentialModels import cornell_potential, bhanot_rudaz_potential
+from potentialModels import cornell_potential, bhanot_rudaz_potential, r_0_calc, r_1_calc, r_2_calc
 
 from linestyles import LineStyle, line_styles_dict, line_styles_list
 
@@ -47,45 +47,71 @@ F = 30
 REDNER = False
 initial_calibration_variable = initial_calibration_var_charmonium_cornell
 meson = charmonium_1S
-wavefunction = bhanot_rudaz_wave_function
-potential_model = bhanot_rudaz_potential
 # /User set variables
 
-# Grey line at 0
+fig, axs = plt.subplots(ncols=2, nrows=1)
 
-if REDNER:
-    plt.plot(r_space, [0]*len(r_space), linestyle = line_styles_dict[LineStyle.LOOSELY_DASHED], color = "grey") 
+# Grey line at 0
+plt.plot(r_space, [0]*len(r_space), linestyle = line_styles_dict[LineStyle.LOOSELY_DASHED], color = "grey") 
 
 ###########################################
 ##### POTENTIAL PARAMETER CALIBRATION #####
 ###########################################
 
 print("Calibrating")
-calibrated_variable, sol, points_of_interest = numericalSolvers.calibrate(
-        U0, r_space, wavefunction, 
+cornel_beta, sol, points_of_interest = numericalSolvers.calibrate(
+        U0, r_space, corenell_wave_function, 
         potential_arguments= (meson.binding_energy, meson.reduced_mass),
         initial_calibration_variable = initial_calibration_variable, 
         flight = F
     )
 
-print(f"calibration got {calibrated_variable}")
+
+print(f"calibration got {cornel_beta}")
 pdf, u, v = sol
-plt.plot(r_space, pdf, color = 'magenta', linestyle = line_styles_dict[LineStyle.LOOSELY_DASHDOTTED], linewidth = 4, label = "calibration")
+axs[0].plot(r_space, pdf, color = 'magenta', linestyle = line_styles_dict[LineStyle.LOOSELY_DASHDOTTED], linewidth = 4, label = "calibration")
 
-binding_energies, masses = calculate_meson_masses(meson, r_space, wavefunction, N, calibrated_variable, render=REDNER)
 
+
+binding_energies, masses = calculate_meson_masses(meson, r_space, corenell_wave_function, N, cornel_beta, ax = axs[0])
 for n in range(N+1):
     for l in range(n):
         print(f"M_{n}{l} = {masses[n][l]}")
+        
+##################################
+######### BH Calibrating #########
+##################################
+
+print("Calibrating")
+bh_beta, sol, points_of_interest = numericalSolvers.calibrate(
+        U0, r_space, bhanot_rudaz_wave_function, 
+        potential_arguments= (meson.binding_energy, meson.reduced_mass),
+        initial_calibration_variable = initial_calibration_variable, 
+        flight = F
+    )
 
 ##################################
 ##### POTENTIAL PDF PLOTTING #####
 ##################################
 
-# plt.plot(r_space, [0]*len(r_space), linestyle = line_styles_dict[LineStyle.LOOSELY_DASHED], color = "grey")
+potential_cutoff = 3
+axs[1].plot(r_space, [0]*len(r_space), linestyle = line_styles_dict[LineStyle.LOOSELY_DASHED], color = "grey")
 
-# potential_values = [potential_model(r, calibrated_variable) for r in r_space]
-# plt.plot(r_space[3:], potential_values[3:])
+potential_values = cornell_potential(r_space, cornel_beta)
+axs[1].plot(r_space[potential_cutoff:], potential_values[potential_cutoff:], label = "Cornell")
+
+
+potential_values = [bhanot_rudaz_potential(r, bh_beta) for r in r_space]
+axs[1].plot(r_space[potential_cutoff:], potential_values[potential_cutoff:], label = "Bhanot Rudaz", linestyle = line_styles_dict[LineStyle.LOOSELY_DASHED])
+
+v_min = min(potential_values[potential_cutoff:])
+v_max = max(potential_values[potential_cutoff:])
+
+axs[1].vlines(r_0_calc(bh_beta), ymin = v_min, ymax = v_max, color = "gainsboro", linestyle = line_styles_dict[LineStyle.LONG_DASH_WITH_OFFSET])
+axs[1].vlines(r_1_calc(bh_beta), ymin = v_min, ymax = v_max, color = "gainsboro", linestyle = line_styles_dict[LineStyle.LONG_DASH_WITH_OFFSET])
+axs[1].vlines(r_2_calc(bh_beta), ymin = v_min, ymax = v_max, color = "gainsboro", linestyle = line_styles_dict[LineStyle.LONG_DASH_WITH_OFFSET])
+
+# axs[1].vlines(5, ymin = -10, ymax = 10, color = "grey", linestyle = line_styles_dict[LineStyle.LONG_DASH_WITH_OFFSET])
 
 ##############################
 ##### MESON PDF PLOTTING #####
@@ -93,9 +119,9 @@ for n in range(N+1):
 
 # Numerical solving of exciterd states
 
-if REDNER:
-    plt.legend()
-    plt.show()
+
+plt.legend()
+plt.show()
 
 
 

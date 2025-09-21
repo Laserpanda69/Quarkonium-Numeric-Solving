@@ -30,11 +30,11 @@ U0 = [0,1]
 # Grey line at 0
 
 def calculate_meson_masses(meson: Mesons.Meson,r_space,wavefunction,n_states_count,
-    calibrated_variable,flights=30,render=True,
+    calibrated_variable,flights=30, ax = None
 ) -> tuple[dict]:
 
-    if render:
-        plt.plot(r_space, [0]*len(r_space), linestyle = line_styles_dict[LineStyle.LOOSELY_DASHED], color = "grey")
+    if ax:
+        ax.plot(r_space, [0]*len(r_space), linestyle = line_styles_dict[LineStyle.LOOSELY_DASHED], color = "grey")
 
     ##############################
     ##### MESON PDF PLOTTING #####
@@ -75,7 +75,7 @@ def calculate_meson_masses(meson: Mesons.Meson,r_space,wavefunction,n_states_cou
             quark_mass = sum(q.mass for q in meson.quarks)
             masses[n].append(binding_energy + quark_mass)
 
-            if render:
+            if ax:
                 nodes, turning_points = points_of_interest
                 color = color_cycle[n-1]
                 linestyle = line_styles_list[l]
@@ -96,13 +96,13 @@ def calculate_meson_masses(meson: Mesons.Meson,r_space,wavefunction,n_states_cou
                 min_tp_peak = local_lowest_peak if local_lowest_peak < min_tp_peak else min_tp_peak
                 min_tp_peak_line = [min_tp_peak]*len(r_space)
 
-                plt.scatter(turning_points['positions'], pdf_turning_point_peaks, color = color, linewidths= .5)
-                plt.plot(r_space, pdf, color=color, linestyle=linestyle, label=f"{n}{l}")
-                plt.plot(r_space,pdf_maxima_line,linestyle=line_styles_dict[LineStyle.LOOSELY_DOTTED],color=color,alpha=0.4,)
-                plt.plot(r_space, min_tp_peak_line, linestyle = line_styles_dict[LineStyle.LOOSELY_DOTTED], color = color, alpha = 0.4)
+                ax.scatter(turning_points['positions'], pdf_turning_point_peaks, color = color, linewidths= .5)
+                ax.plot(r_space, pdf, color=color, linestyle=linestyle, label=f"{n}{l}")
+                ax.plot(r_space,pdf_maxima_line,linestyle=line_styles_dict[LineStyle.LOOSELY_DOTTED],color=color,alpha=0.4,)
+                ax.plot(r_space, min_tp_peak_line, linestyle = line_styles_dict[LineStyle.LOOSELY_DOTTED], color = color, alpha = 0.4)
 
-        if render:
-            plt.fill_between(r_space, min_tp_peak_line, pdf_maxima_line, where=(min_tp_peak < pdf_maxima_line), color=color, alpha=0.1)
-            plt.legend()
+        if ax:
+            ax.fill_between(r_space, min_tp_peak_line, pdf_maxima_line, where=(min_tp_peak < pdf_maxima_line), color=color, alpha=0.1)
+            ax.legend()
 
     return binding_energies, masses
