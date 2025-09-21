@@ -16,7 +16,7 @@ def cornell_potential(r: float, qcd_string_tentsion: float) -> list[float]:
 
 r_0_calc = lambda beta: np.power(CASIMIR_FACTOR*ALPHA_S, 0.5) * np.power(beta, -0.5)
 r_1_calc = lambda beta: r_0_calc(beta) / math.e
-r_2_calc = lambda beta: r_0_calc(beta) * math.e
+r_2_calc = lambda beta: r_0_calc(beta) * math.e 
 b_calc = lambda beta: beta * r_2_calc(beta)
 
 bhanot_rudaz_head_calc  = lambda r: -CASIMIR_FACTOR*ALPHA_S/r
