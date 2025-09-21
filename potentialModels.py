@@ -42,3 +42,9 @@ def bhanot_rudaz_potential(r: float, beta: float) -> float:
 def richerdson_fulcher_potential(r: float, beta: float) -> float:
     meson_degrees_of_freedom = 3 # 1 orbit spin, 1 translation, 1 orbit distance 
     return beta*r - (8*math.pi)/((33-2*meson_degrees_of_freedom)*r)
+
+
+def read_potential(r: float, beta:float) -> float:
+    # - beta / r**2 should introduce a reduction in the potential at high r
+    return -CASIMIR_FACTOR*ALPHA_S/r + beta*r - beta*r**0.5
+

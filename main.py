@@ -83,6 +83,8 @@ cornell_beta, sol, points_of_interest = numericalSolvers.calibrate(
         initial_calibration_variable = initial_calibration_variable, 
         flight = F
     )
+
+print(f"Cornell: {cornel_beta}")
         
 ##################################
 ######### BH Calibrating #########
@@ -96,6 +98,9 @@ bh_beta, sol, points_of_interest = numericalSolvers.calibrate(
         flight = F
     )
 
+print(f"Bhnot Rudaz: {bh_beta}")
+
+
 ##################################
 ######### RF Calibrating #########
 ##################################
@@ -107,6 +112,23 @@ rf_beta, sol, points_of_interest = numericalSolvers.calibrate(
         initial_calibration_variable = initial_calibration_variable, 
         flight = F
     )
+
+print(f"Richardson Fulcher: {rf_beta}")
+
+
+##################################
+######## Read Calibrating ########
+##################################
+
+print("Calibrating Read")
+read_beta, sol, points_of_interest = numericalSolvers.calibrate(
+        U0, r_space, Wfns.read_wave_function, 
+        potential_arguments= (meson.binding_energy, meson.reduced_mass),
+        initial_calibration_variable = initial_calibration_variable, 
+        flight = F
+    )
+
+print(f"Read: {read_beta}")
 
 ##################################
 ##### POTENTIAL PDF PLOTTING #####
@@ -131,6 +153,9 @@ axs[1].vlines(r_2_calc(bh_beta), ymin = v_min, ymax = v_max, color = "gainsboro"
 
 potential_values = Vmods.richerdson_fulcher_potential(r_space, rf_beta)
 axs[1].plot(r_space[potential_cutoff+2:], potential_values[potential_cutoff+2:], label = "Richardson Fulcher", linestyle = line_styles_dict[LineStyle.DASHDOTTED])
+
+potential_values = Vmods.read_potential(r_space, 0.2)
+axs[1].plot(r_space[potential_cutoff+2:], potential_values[potential_cutoff+2:], label = "Read", linestyle = line_styles_dict[LineStyle.DASHDOTTED])
 
 # axs[1].vlines(5, ymin = -10, ymax = 10, color = "grey", linestyle = line_styles_dict[LineStyle.LONG_DASH_WITH_OFFSET])
 

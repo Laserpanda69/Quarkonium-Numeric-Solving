@@ -20,7 +20,12 @@ def bhanot_rudaz_wave_function(u0,r, l, beta, mu, E):
 
 def richerdson_fulcher_wave_function(u0,r, l, beta, mu, E):
     return _wave_function(u0,r, l, beta, mu, E, Vmods.richerdson_fulcher_potential)
+    
+
+def read_wave_function(u0,r, l, beta, mu, E):
+    return _wave_function(u0,r, l, beta, mu, E, Vmods.read_potential)
         
+    
 
         
 
