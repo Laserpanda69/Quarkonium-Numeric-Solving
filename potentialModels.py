@@ -14,19 +14,13 @@ def cornell_potential(r: float, qcd_string_tentsion: float) -> list[float]:
     return -CASIMIR_FACTOR*ALPHA_S/r + qcd_string_tentsion*r
 
 
-r_0_calc = lambda beta: np.power((4 * ALPHA_S / 2), 0.5) * np.power(beta, -0.5)
-# np.power((4 * ALPHA_S / 2), 0.5) is a constant, so is pre-calculated to avoid dividing zero
-# when ALPHA_S = 0.4
-# R_0_ALPHA_COMPONENT = 0 if ALPHA_S == 0.4 else np.power((4 * ALPHA_S / 2), 0.5)
-# r_0_calc = lambda beta:R_0_ALPHA_COMPONENT * np.power(beta, -0.5)
+r_0_calc = lambda beta: np.power((4 * ALPHA_S / 3), 0.5) * np.power(beta, -0.5)
 r_1_calc = lambda beta: r_0_calc(beta) / math.e
 r_2_calc = lambda beta: r_0_calc(beta) * math.e
 b_calc = lambda beta: beta * r_2_calc(beta)
 
 bhanot_rudaz_head_calc  = lambda r: -CASIMIR_FACTOR*ALPHA_S/r
 bhanot_rudaz_middle_calc = lambda b, r_0, r: b * math.log(r/r_0)
-# bhanot_rudaz_middle_calc = lambda b, r_0, r: 0
-
 bhanot_rudaz_tail_calc   = lambda beta, r: beta * r
 
 
