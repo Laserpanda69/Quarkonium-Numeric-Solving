@@ -23,8 +23,10 @@ r_1_calc = lambda beta: r_0_calc(beta) / math.e
 r_2_calc = lambda beta: r_0_calc(beta) * math.e
 b_calc = lambda beta: beta * r_2_calc(beta)
 
-bhanot_rudaz_head_calc  = lambda r: -(4/3) * (ALPHA_S / r)
-bhanot_rudaz_middle_calc = lambda b, r_0, r: b * math.log(r_0/r)
+bhanot_rudaz_head_calc  = lambda r: -CASIMIR_FACTOR*ALPHA_S/r
+bhanot_rudaz_middle_calc = lambda b, r_0, r: b * math.log(r/r_0)
+# bhanot_rudaz_middle_calc = lambda b, r_0, r: 0
+
 bhanot_rudaz_tail_calc   = lambda beta, r: beta * r
 
 
@@ -34,7 +36,7 @@ def bhanot_rudaz_potential(r: float, beta: float) -> float:
     
     # now r >= r_1
     
-    if r >= r_2_calc(beta):
+    if r > r_2_calc(beta):
         return bhanot_rudaz_tail_calc(beta, r)
     
     # Now r_1 <= r < r_2
