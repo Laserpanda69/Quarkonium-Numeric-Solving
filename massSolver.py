@@ -1,16 +1,9 @@
-import numpy as np  
 import matplotlib.pyplot as plt
-import scipy.integrate 
 
 import wavefuncitons as wfns
 
-from enum import Enum
-from data import ParticleName, particle_masses, ColorCharge
-
-import numericalSolvers as Solvers
 
 from Particles.Fermions.Quarks import *
-from Particles.Hadrons.Hadron import Hadron
 from Particles.Hadrons import Mesons 
 
 import numericalSolvers

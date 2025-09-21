@@ -39,22 +39,6 @@ def bhanot_rudaz_potential(r: float, beta: float) -> float:
     return bhanot_rudaz_middle_calc(b, r_0, r)
 
 
-
-
-
-# def bhanot_rudaz_potential(radii: list[float], alpha_s: float, beta: float) -> list[float]:
-#     r_0 = r_0_calc(beta)
-#     r_1 = r_1_calc(beta)
-#     r_2 = r_2_calc(beta)
-#     b   = b_calc(beta)
-    
-#     # This will get the index where r_n would be inserted, threfore eveything under it will be less
-#     r_indexer = lambda r_n: bisect.bisect(radii, r_n) 
-    
-#     r_1_index = r_indexer(r_1)
-#     r_2_index = r_indexer(r_2)
-#     new_radii_head = [bhanot_rudaz_head_calc(r) for r in radii[:r_1_index]]
-#     new_radii_middle = [bhanot_rudaz_middle_calc(b, r_0) for r in radii[r_1_index:r_2_index]]
-#     new_radii_tail = [bhanot_rudaz_tail_calc(beta, r) for r in radii[r_2_index:]]
-    
-#     return [*[new_radii_head], *[new_radii_middle], *[new_radii_tail]]
+def richerdson_fulcher_potential(r: float, beta: float) -> float:
+    meson_degrees_of_freedom = 3 # 1 orbit spin, 1 translation, 1 orbit distance 
+    return beta*r - (8*math.pi)/((33-2*meson_degrees_of_freedom)*r)

@@ -14,7 +14,7 @@ class Particle():
         return isinstance(other_particle, Particle)
     
     @staticmethod
-    def convert_to_angular_momentum_letter(l: int):
+    def convert_to_angular_momentum_letter(l: int) -> str:
         match l:
             case 1:
                 L = 'S'
@@ -32,7 +32,7 @@ class Particle():
 
 
     @staticmethod
-    def convert_to_angular_momentum_number(L: str):
+    def convert_to_angular_momentum_number(L: str) -> int:
         match L:
             case 'S':
                 l = 1
@@ -47,3 +47,20 @@ class Particle():
                 # raise Exception(f"{self.angular_momentum_number} out of range of know values of angular momentum")
         
         return l
+    
+    
+    
+    @staticmethod
+    def convert_to_hydrogencic_state(self, spectroscopy_state: str) -> str:
+        N = int(spectroscopy_state[0])
+        l = self.convert_to_angular_momentum_number(spectroscopy_state[-1])
+        n = N - l
+        
+        return n, l
+    
+    @staticmethod
+    def convert_to_spectroscopy_state(self, n:int, l: int):
+        N = n - l
+        L = self.convert_to_angular_momentum_letter(l)
+        return f"{N}{L}"
+    

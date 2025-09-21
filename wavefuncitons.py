@@ -1,7 +1,7 @@
 import numpy as np
 import scipy.integrate 
 
-import potentialModels
+import potentialModels as Vmods
 
 def _wave_function(u0,r, l, beta, mu, E, potential):
     u,v= u0
@@ -12,14 +12,16 @@ def _wave_function(u0,r, l, beta, mu, E, potential):
 
 
 def corenell_wave_function(u0,r, l, beta, mu, E):
-    return _wave_function(u0,r, l, beta, mu, E, potentialModels.cornell_potential)
+    return _wave_function(u0,r, l, beta, mu, E, Vmods.cornell_potential)
 
-
-# def corenell_wave_function(u0,r, l, beta, mu, E):
-#     return _wave_function(u0,r, l, mu, E, potentialModels.cornell_potential, (r, beta))
         
 def bhanot_rudaz_wave_function(u0,r, l, beta, mu, E):
-    return _wave_function(u0,r, l, beta, mu, E, potentialModels.bhanot_rudaz_potential)
+    return _wave_function(u0,r, l, beta, mu, E, Vmods.bhanot_rudaz_potential)
+
+def richerdson_fulcher_wave_function(u0,r, l, beta, mu, E):
+    return _wave_function(u0,r, l, beta, mu, E, Vmods.richerdson_fulcher_potential)
+        
+
         
 
 def square_wavefunction(wave_function: list[float]) -> list[float]:
