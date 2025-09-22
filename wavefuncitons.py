@@ -3,31 +3,52 @@ import scipy.integrate
 
 import potentialModels as Vmods
 
-def _wave_function(u0,r, l, beta, mu, E, potential):
+def _wave_function(u0,r, l, beta, mu, E, potential_model):
     u,v= u0
     L = l*(l+1)
-    potential = potential(r, beta)
+    potential = potential_model(r, beta)
     
     return [v,(L*u)/(r*r) -2*mu*u*(E-potential)]
 
 
-def corenell_wave_function(u0,r, l, beta, mu, E):
+def cornell_wave_function(u0,r, l, beta, mu, E):
     return _wave_function(u0,r, l, beta, mu, E, Vmods.cornell_potential)
 
-        
+
 def bhanot_rudaz_wave_function(u0,r, l, beta, mu, E):
     return _wave_function(u0,r, l, beta, mu, E, Vmods.bhanot_rudaz_potential)
 
-def richerdson_fulcher_wave_function(u0,r, l, beta, mu, E):
-    return _wave_function(u0,r, l, beta, mu, E, Vmods.richerdson_fulcher_potential)
+def richardson_fulcher_wave_function(u0,r, l, beta, mu, E):
+    return _wave_function(u0,r, l, beta, mu, E, Vmods.richardson_fulcher_potential)
     
 
 def read_wave_function(u0,r, l, beta, mu, E):
     return _wave_function(u0,r, l, beta, mu, E, Vmods.read_potential)
-        
+
+
+
+def _calibrated_wave_function(u0,r, l, mu, E, calibrated_potential_model):
+    u,v= u0
+    L = l*(l+1)
+    potential = calibrated_potential_model(r)
+    
+    return [v,(L*u)/(r*r) -2*mu*u*(E-potential)]
+
+def calibrate_cornell_wave_function(beta: float) -> callable:
+    return lambda u0,r, l, mu, E: _calibrated_wave_function(u0,r, l, mu, E, Vmods.calibrated_cornell_potential(beta))
+
+def calibrate_bhanot_rudaz_wave_function(beta: float) -> callable:
+    return lambda u0,r, l, mu, E:  _calibrated_wave_function(u0,r, l, mu, E, Vmods.calibrated_bhanot_rudaz_potential(beta))
+
+def calibrate_richardson_fulcher_wave_function(beta: float) -> callable:
+    return lambda u0,r, l, mu, E:  _calibrated_wave_function(u0,r, l, mu, E, Vmods.calibrated_richardson_fulcher_potential(beta))
     
 
-        
+def calibrate_read_wave_function(beta: float) -> callable:
+    return lambda u0,r, l, mu, E:  _calibrated_wave_function(u0,r, l, mu, E, Vmods.calibrated_read_potential(beta))
+
+
+
 
 def square_wavefunction(wave_function: list[float]) -> list[float]:
     pdf = np.zeros(wave_function.shape)

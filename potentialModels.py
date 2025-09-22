@@ -10,8 +10,31 @@ CASIMIR_FACTOR = (color_charge_count**2-1)/(2*color_charge_count)
 print(f"QCD Runnning Constant = {ALPHA_S}")
 print(f"Casimir Factor = {CASIMIR_FACTOR}")
 
+# class PotentialModel():
+#     def __init__(self, equation: callable, init_args: tuple):
+#         self.equation = equation
+#         self.args = init_args
+        
+#     def evaluate(self, r_space):
+#         return self.equation(r_space)
+    
+#     def calbirate(self):
+#         pass
+    
+# class CornellPotential(PotentialModel):
+#     def __init__(self, qcd_string_tentsion):
+#         equation = lambda r: -CASIMIR_FACTOR*ALPHA_S/r + qcd_string_tentsion*r
+#         super().__init__(equation, qcd_string_tentsion)
+
+
+
+
+
 def cornell_potential(r: float, qcd_string_tentsion: float) -> list[float]:
     return -CASIMIR_FACTOR*ALPHA_S/r + qcd_string_tentsion*r
+
+def calibrated_cornell_potential(beta: float) -> callable:
+    return lambda r: cornell_potential(r, beta)
 
 
 r_0_calc = lambda beta: np.power(CASIMIR_FACTOR*ALPHA_S, 0.5) * np.power(beta, -0.5)
@@ -38,14 +61,22 @@ def bhanot_rudaz_potential(r: float, beta: float) -> float:
     b   = b_calc(beta)
     return bhanot_rudaz_middle_calc(b, r_0, r)
 
+def calibrated_bhanot_rudaz_potential(beta: float) -> callable:
+    return lambda r: bhanot_rudaz_potential(r, beta)
 
-def richerdson_fulcher_potential(r: float, beta: float) -> float:
+
+def richardson_fulcher_potential(r: float, beta: float) -> float:
     meson_degrees_of_freedom = 3 # 1 orbit spin, 1 translation, 1 orbit distance 
     return beta*r - (8*math.pi)/((33-2*meson_degrees_of_freedom)*r)
 
+def calibrated_richardson_fulcher_potential(beta: float) -> callable:
+    return lambda r: richardson_fulcher_potential(r, beta)
 
 def read_potential(r: float, beta:float) -> float:
     return -CASIMIR_FACTOR*ALPHA_S/r  +  beta*r
 # *(1-np.exp(-(r/15)**1.05))
 # /(1+np.exp((r-13)))
+
+def calibrated_read_potential(beta: float) -> callable:
+    return lambda r: read_potential(r, beta)
 

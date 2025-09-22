@@ -92,20 +92,20 @@ def calibration_staircase(u0, r_space, wave_function, meson_1S, b_lower, step_si
     gamma = (b_lower+b_upper)/2
     return (gamma, step_size), scipy.integrate.odeint(wave_function, u0, r_space, args=(0, b_lower, meson_1S.reduced_mass, meson_1S.binding_energy))
 
-def energy_staircase(u0, r_space, wave_function, meson, beta: float, epsilon_lower, step_size = 0.015, steps_taken = 0, flight = 5):
+def energy_staircase(u0, r_space, calibrated_wave_function, meson, epsilon_lower, step_size = 0.015, steps_taken = 0, flight = 5):
     # Move epsilon, reduced mass, and fixed value into a tuple 
     # so other potentialls with differnt arguments can be used
     
     # This method not yet using calibration mode
     
     epsilon_upper = epsilon_lower + step_size * (steps_taken+1)
-    v_lower = scipy.integrate.odeint(wave_function, u0, r_space, args=(meson.state[1], beta, meson.reduced_mass, epsilon_lower))[:,1]
-    v_upper = scipy.integrate.odeint(wave_function, u0, r_space, args=(meson.state[1], beta, meson.reduced_mass, epsilon_upper))[:,1]
+    v_lower = scipy.integrate.odeint(calibrated_wave_function, u0, r_space, args=(meson.state[1], meson.reduced_mass, epsilon_lower))[:,1]
+    v_upper = scipy.integrate.odeint(calibrated_wave_function, u0, r_space, args=(meson.state[1], meson.reduced_mass, epsilon_upper))[:,1]
     
     divergence_has_flipped = (v_lower[-1] < 0) != (v_upper[-1] < 0)
     
     if not divergence_has_flipped:
-        return energy_staircase(u0, r_space, wave_function, meson, beta, epsilon_lower =epsilon_upper,
+        return energy_staircase(u0, r_space, calibrated_wave_function, meson, epsilon_lower =epsilon_upper,
             step_size= step_size, steps_taken= steps_taken+1, flight=flight)
     
     gamma = (epsilon_lower+epsilon_upper)/2
@@ -114,7 +114,7 @@ def energy_staircase(u0, r_space, wave_function, meson, beta: float, epsilon_low
     # Divergence has flipped
     if flight > 0:
         # print("going to flight",flight )
-        return energy_staircase(u0, r_space, wave_function, meson, beta, epsilon_lower=epsilon_lower,
+        return energy_staircase(u0, r_space, calibrated_wave_function, meson, epsilon_lower=epsilon_lower,
             step_size = step_size/2, steps_taken = 0, flight = flight - 1)
     
     # Divergence has flipped and all layers have been run
@@ -122,7 +122,7 @@ def energy_staircase(u0, r_space, wave_function, meson, beta: float, epsilon_low
     # print(f"{meson.binding_energy= }")
     # print(f"{meson.mass =}")
     meson.binding_energy_error = step_size
-    return meson, scipy.integrate.odeint(wave_function, u0, r_space, args=(meson.state[1], beta, meson.reduced_mass, epsilon_lower))
+    return meson, scipy.integrate.odeint(calibrated_wave_function, u0, r_space, args=(meson.state[1], meson.reduced_mass, epsilon_lower))
 
 
 def calibrate(u0, r_space, wave_function, meson_1S, initial_calibration_variable, step_size = 0.015, steps_taken = 0, flight = 5, energy_offset = 0.01):
@@ -154,9 +154,9 @@ def calibrate(u0, r_space, wave_function, meson_1S, initial_calibration_variable
         return calibrated_variable_with_error, (pdf, u ,v), (nodes, turning_points)
         
         
-def solve_for_energy(u0, r_space, wave_function, meson, beta, epsilon_lower, step_size = 0.015, steps_taken = 0, flight = 5, energy_offset = 0.01):
+def solve_for_energy(u0, r_space, wave_function, meson, epsilon_lower, step_size = 0.015, steps_taken = 0, flight = 5, energy_offset = 0.01):
     
-    meson, numeric_solution, = energy_staircase(u0, r_space, wave_function, meson, beta, epsilon_lower, step_size, steps_taken, flight)
+    meson, numeric_solution, = energy_staircase(u0, r_space, wave_function, meson, epsilon_lower, step_size, steps_taken, flight)
     u = numeric_solution[:,0]
     v = numeric_solution[:,1]
 

@@ -10,7 +10,7 @@ import numericalSolvers
 
 from Particles.Hadrons.Mesons import Meson
 
-from wavefuncitons import corenell_wave_function, bhanot_rudaz_wave_function
+from wavefuncitons import cornell_wave_function, bhanot_rudaz_wave_function
 from potentialModels import cornell_potential, bhanot_rudaz_potential
 
 from linestyles import LineStyle, line_styles_dict, line_styles_list
@@ -26,7 +26,7 @@ U0 = [0,1]
 
 # Grey line at 0
 
-def calculate_meson_masses(r_space,wavefunction,meson_type: Meson, n_states_count, beta, flights=30, ax = None
+def calculate_meson_masses(r_space,wavefunction,meson_type: Meson, n_states_count, flights=30, ax = None
 ) -> list[Meson]:
 
     if ax:
@@ -53,7 +53,7 @@ def calculate_meson_masses(r_space,wavefunction,meson_type: Meson, n_states_coun
         for l in range(0, n):
             meson = meson_type((n,l))
             meson, sol, points_of_interest = numericalSolvers.solve_for_energy(
-                U0, r_space, wavefunction, meson, beta,
+                U0, r_space, wavefunction, meson,
                 epsilon_lower = last_energy_value + offset, 
                 flight = flights
             )
@@ -86,7 +86,7 @@ def calculate_meson_masses(r_space,wavefunction,meson_type: Meson, n_states_coun
                 min_tp_peak_line = [min_tp_peak]*len(r_space)
 
                 ax.scatter(turning_points['positions'], pdf_turning_point_peaks, color = color, linewidths= .5)
-                ax.plot(r_space, pdf, color=color, linestyle=linestyle, label=f"{n}{l}")
+                ax.plot(r_space, pdf, color=color, linestyle=linestyle, label=f"M_{n}{l} = {meson.mass:.2f}")
                 ax.plot(r_space,pdf_maxima_line,linestyle=line_styles_dict[LineStyle.LOOSELY_DOTTED],color=color,alpha=0.4,)
                 ax.plot(r_space, min_tp_peak_line, linestyle = line_styles_dict[LineStyle.LOOSELY_DOTTED], color = color, alpha = 0.4)
 

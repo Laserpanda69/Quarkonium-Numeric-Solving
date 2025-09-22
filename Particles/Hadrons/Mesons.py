@@ -3,7 +3,7 @@ from Particles.Bosons import Boson
 from Particles.Fermions.Quarks import *
 from data import ParticleName, particle_charges, particle_masses
 
-GROUND_STATE = '1S'
+GROUND_STATE = (1,0)
 REFERENCE = 'reference'
 STAIRCASE = 'staircase'
 
@@ -12,7 +12,7 @@ STAIRCASE = 'staircase'
 class Meson(Hadron):#, Boson):
 
     # Mesons are made of quark/anti_quark pairs
-    def __int__(self, state: tuple[int, int], quark: Quark, anti_quark: Quark):
+    def __init__(self, state: tuple[int, int], quark: Quark, anti_quark: Quark):
         try:
             assert(anti_quark.color.value  * 1/anti_quark.color.value == 1)
         except:
@@ -46,24 +46,16 @@ class Quarkonia(Meson):
 class Charmonium(Quarkonia):
     def __init__(self, state):
         super().__init__(state, CharmQuark(1/2, ColorCharge.RED), AntiCharmQuark(1/2, ColorCharge.RED))
-        
-        if state:
-            try:
-                self.set_mass(particle_masses[ParticleName.CHARMONIUM][REFERENCE][state[0]][state[1]]['value'])
-            except:
-                print(f"No experimental data for {state = }")
+        # self.set_mass(particle_masses[ParticleName.CHARMONIUM][REFERENCE][state[0]][state[1]]['value'])
+
             
 class Bottomonium(Quarkonia):
     def __init__(self, state):
         super().__init__(state, BottomQuark(1/2, ColorCharge.RED), AntiBottomQuark(1/2, ColorCharge.RED))
-        
-        if state:
-            self.set_mass(particle_masses[ParticleName.BOTTOMONIUM][REFERENCE][state[0]][state[1]]['value'])
+        # self.set_mass(particle_masses[ParticleName.BOTTOMONIUM][REFERENCE][state[0]][state[1]]['value'])
 
             
 class Toponium(Quarkonia):
     def __init__(self, state):
         super().__init__(state, TopQuark(1/2, ColorCharge.RED), AntiTopQuark(1/2, ColorCharge.RED))
-        
-        if state:
-            self.set_mass(particle_masses[ParticleName.TOPONIUM][REFERENCE][state[0]][state[1]]['value'])
+        # self.set_mass(particle_masses[ParticleName.TOPONIUM][REFERENCE][state[0]][state[1]]['value'])

@@ -26,6 +26,7 @@ r_space = np.linspace(0.0000001, 15, 1000)
 
 # Fix this so 1S state can be entered
 charmonium_1S = Mesons.Charmonium(GROUND_STATE)
+charmonium_1S.set_mass(particle_masses[ParticleName.CHARMONIUM][REFERENCE][GROUND_STATE[0]][GROUND_STATE[1]]['value'])
 initial_calibration_var_charmonium_cornell = 0.195
 initial_calibration_var_charmonium_bh = 0.2
 initial_calibration_var_charmonium_rf = 0.3
@@ -45,38 +46,20 @@ wavefunction = Wfns.read_wave_function
 initial_calibration_variable = 0.1
 # /User set variables
 
-fig, axs = plt.subplots(ncols=2, nrows=1)
+fig, axs = plt.subplots(ncols=2, nrows=2)
 
 # Grey line at 0
-plt.plot(r_space, [0]*len(r_space), linestyle = line_styles_dict[LineStyle.LOOSELY_DASHED], color = "grey") 
+for ax in axs:
+    for a in ax:
+        a.plot(r_space, [0]*len(r_space), linestyle = line_styles_dict[LineStyle.LOOSELY_DASHED], color = "grey") 
 
-###########################################
-##### POTENTIAL PARAMETER CALIBRATION #####
-###########################################
-
-print("Calibrating")
-beta_with_error, sol, points_of_interest = numericalSolvers.calibrate(
-        U0, r_space, wavefunction, ground_state_meson,
-        initial_calibration_variable, 
-        flight = flights
-    )
-
-
-print(f"calibration got {beta_with_error= }")
-pdf, u, v = sol
-axs[0].plot(r_space, pdf, color = 'magenta', linestyle = line_styles_dict[LineStyle.LOOSELY_DASHDOTTED], linewidth = 4, label = "calibration")
-
-beta = beta_with_error[0]
-# mesons = calculate_meson_masses(r_space, wavefunction, Mesons.Charmonium, state_count, beta, ax = axs[0])
-
-        
 ##################################
 ####### Cornel Calibrating #######
 ##################################
 
-print("Calibrating Bhnot Rudaz")
-cornell_beta, sol, points_of_interest, error_on_cornell_beta = numericalSolvers.calibrate(
-        U0, r_space, Wfns.corenell_wave_function, ground_state_meson,
+print("Calibrating Cornell")
+cornell_beta, sol, points_of_interest = numericalSolvers.calibrate(
+        U0, r_space, Wfns.cornell_wave_function, ground_state_meson,
         initial_calibration_variable = initial_calibration_variable, 
         flight = flights
     )
@@ -88,13 +71,13 @@ print(f"Cornell: {cornell_beta}")
 ##################################
 
 print("Calibrating Bhnot Rudaz")
-bh_beta, sol, points_of_interest, error_on_bh_beta = numericalSolvers.calibrate(
+bhanot_rudaz_beta, sol, points_of_interest = numericalSolvers.calibrate(
         U0, r_space, Wfns.bhanot_rudaz_wave_function, ground_state_meson,
         initial_calibration_variable = initial_calibration_variable, 
         flight = flights
     )
 
-print(f"Bhnot Rudaz: {bh_beta}")
+print(f"Bhnot Rudaz: {bhanot_rudaz_beta}")
 
 
 ##################################
@@ -102,13 +85,13 @@ print(f"Bhnot Rudaz: {bh_beta}")
 ##################################
 
 print("Calibrating Richardson Fulcher")
-rf_beta, sol, points_of_interest, error_on_rf_beta = numericalSolvers.calibrate(
-        U0, r_space, Wfns.richerdson_fulcher_wave_function, ground_state_meson,
+richardson_fulcher_beta, sol, points_of_interest = numericalSolvers.calibrate(
+        U0, r_space, Wfns.richardson_fulcher_wave_function, ground_state_meson,
         initial_calibration_variable = initial_calibration_variable, 
         flight = flights
     )
 
-print(f"Richardson Fulcher: {rf_beta}")
+print(f"Richardson Fulcher: {richardson_fulcher_beta}")
 
 
 ##################################
@@ -116,7 +99,7 @@ print(f"Richardson Fulcher: {rf_beta}")
 ##################################
 
 print("Calibrating Read")
-read_beta, sol, points_of_interest, error_on_read_beta = numericalSolvers.calibrate(
+read_beta, sol, points_of_interest = numericalSolvers.calibrate(
         U0, r_space, Wfns.read_wave_function, ground_state_meson,
         initial_calibration_variable = initial_calibration_variable, 
         flight = flights
@@ -124,6 +107,29 @@ read_beta, sol, points_of_interest, error_on_read_beta = numericalSolvers.calibr
 
 print(f"Read: {read_beta}")
 
+##################################
+## Clcualte Masses and Plot PDF ##
+##################################
+
+axs[0,0].set_title("Cornell")
+cornell_mesons = calculate_meson_masses(r_space, wavefunction=Wfns.calibrate_cornell_wave_function(cornell_beta[0]), 
+    meson_type=Mesons.Charmonium, n_states_count=state_count, ax=axs[0,0])
+
+axs[0,1].set_title("Bhanot Rudaz")
+bhanot_rudaz_mesons = calculate_meson_masses(r_space, wavefunction=Wfns.calibrate_bhanot_rudaz_wave_function(bhanot_rudaz_beta[0]), 
+    meson_type=Mesons.Charmonium, n_states_count=state_count, ax=axs[0,1])
+
+axs[1,0].set_title("Richardson Fulcher")
+richardson_fulcher_mesons = calculate_meson_masses(r_space, wavefunction=Wfns.calibrate_richardson_fulcher_wave_function(richardson_fulcher_beta[0]), 
+    meson_type=Mesons.Charmonium, n_states_count=state_count, ax=axs[1,0])
+
+axs[1,1].set_title("Read")
+read_mesons = calculate_meson_masses(r_space, wavefunction=Wfns.calibrate_read_wave_function(read_beta[0]), 
+    meson_type=Mesons.Charmonium, n_states_count=state_count, ax=axs[1,1])
+
+plt.show()
+import sys
+sys.exit()
 ##################################
 ##### POTENTIAL PDF PLOTTING #####
 ##################################
@@ -135,13 +141,13 @@ axs[1].plot(r_space, [0]*len(r_space), linestyle = line_styles_dict[LineStyle.LO
 
 # Plot cornell potential
 potential_values = Vmods.cornell_potential(r_space, cornell_beta)
-# cornell_roof = [val+error_on_cornell_beta for val in potential_values]
-# cornell_floor = [val-error_on_cornell_beta for val in potential_values]
+cornell_roof = [val+error_on_cornell_beta for val in potential_values]
+cornell_floor = [val-error_on_cornell_beta for val in potential_values]
 axs[1].plot(r_space[potential_cutoff:], potential_values[potential_cutoff:], label = "Cornell")
-# axs[1].plot(r_space[potential_cutoff:], cornell_roof[potential_cutoff:], color = color_cycle[0], alpha = 0.3)
-# axs[1].plot(r_space[potential_cutoff:], cornell_floor[potential_cutoff:], color = color_cycle[0], alpha = 0.3)
-# axs[1].fill_between(r_space[potential_cutoff:], cornell_roof[potential_cutoff:], cornell_floor[potential_cutoff:],
-#     color = color_cycle[0], alpha = 0.1)
+axs[1].plot(r_space[potential_cutoff:], cornell_roof[potential_cutoff:], color = color_cycle[0], alpha = 0.3)
+axs[1].plot(r_space[potential_cutoff:], cornell_floor[potential_cutoff:], color = color_cycle[0], alpha = 0.3)
+axs[1].fill_between(r_space[potential_cutoff:], cornell_roof[potential_cutoff:], cornell_floor[potential_cutoff:],
+    color = color_cycle[0], alpha = 0.1)
 
 
 
@@ -164,12 +170,6 @@ axs[1].plot(r_space[potential_cutoff+2:], potential_values[potential_cutoff+2:],
 potential_values = Vmods.read_potential(r_space, 0.2)
 axs[1].plot(r_space[potential_cutoff+2:], potential_values[potential_cutoff+2:], label = "Read", linestyle = line_styles_dict[LineStyle.DASHDOTTED])
 
-
-##############################
-##### MESON PDF PLOTTING #####
-##############################
-
-# Numerical solving of exciterd states
 
 
 plt.legend()
