@@ -6,13 +6,8 @@ import regex as re
 # held together by the strong force
 # Can be either a Boson or a Fermion depending on quark Congig
 class Hadron(Particle):
-    def __init__(self, state:str, *quarks):
+    def __init__(self, state:tuple[int, int], *quarks):
         self.principle_number, self.angular_momentum_number= state
-        if isinstance(self.angular_momentum_number, str): self.angular_momentum_number = self.angular_momentum_number.upper()
-        
-        if not re.match(r'\d',  self.angular_momentum_number):
-            self.angular_momentum_number = super().convert_to_angular_momentum_number(self.angular_momentum_number)
-
         self.quarks:list = quarks
         self.quark_mass:float = sum(q.mass for q in self.quarks)
         

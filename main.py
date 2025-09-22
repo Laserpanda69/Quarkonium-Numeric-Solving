@@ -16,7 +16,7 @@ from massSolver import calculate_meson_masses
 
 # https://pdg.lbl.gov/
 
-GROUND_STATE = '1S'
+GROUND_STATE = (1,0)
 REFERENCE = 'reference'
 STAIRCASE = 'staircase'
 U0 = [0,1]
@@ -55,7 +55,7 @@ plt.plot(r_space, [0]*len(r_space), linestyle = line_styles_dict[LineStyle.LOOSE
 ###########################################
 
 print("Calibrating")
-cornel_beta, sol, points_of_interest = numericalSolvers.calibrate(
+cornel_beta, sol, points_of_interest, error_on_cornell_beta = numericalSolvers.calibrate(
         U0, r_space, wavefunction, 
         potential_arguments= (meson.binding_energy, meson.reduced_mass),
         initial_calibration_variable = initial_calibration_variable, 
@@ -77,7 +77,7 @@ for n in range(state_count+1):
 ##################################
 
 print("Calibrating Bhnot Rudaz")
-cornell_beta, sol, points_of_interest = numericalSolvers.calibrate(
+cornell_beta, sol, points_of_interest, error_on_cornell_beta = numericalSolvers.calibrate(
         U0, r_space, Wfns.corenell_wave_function, 
         potential_arguments= (meson.binding_energy, meson.reduced_mass),
         initial_calibration_variable = initial_calibration_variable, 
@@ -91,7 +91,7 @@ print(f"Cornell: {cornel_beta}")
 ##################################
 
 print("Calibrating Bhnot Rudaz")
-bh_beta, sol, points_of_interest = numericalSolvers.calibrate(
+bh_beta, sol, points_of_interest, error_on_bh_beta = numericalSolvers.calibrate(
         U0, r_space, Wfns.bhanot_rudaz_wave_function, 
         potential_arguments= (meson.binding_energy, meson.reduced_mass),
         initial_calibration_variable = initial_calibration_variable, 
@@ -106,7 +106,7 @@ print(f"Bhnot Rudaz: {bh_beta}")
 ##################################
 
 print("Calibrating Richardson Fulcher")
-rf_beta, sol, points_of_interest = numericalSolvers.calibrate(
+rf_beta, sol, points_of_interest, error_on_rf_beta = numericalSolvers.calibrate(
         U0, r_space, Wfns.richerdson_fulcher_wave_function, 
         potential_arguments= (meson.binding_energy, meson.reduced_mass),
         initial_calibration_variable = initial_calibration_variable, 
@@ -121,7 +121,7 @@ print(f"Richardson Fulcher: {rf_beta}")
 ##################################
 
 print("Calibrating Read")
-read_beta, sol, points_of_interest = numericalSolvers.calibrate(
+read_beta, sol, points_of_interest, error_on_read_beta = numericalSolvers.calibrate(
         U0, r_space, Wfns.read_wave_function, 
         potential_arguments= (meson.binding_energy, meson.reduced_mass),
         initial_calibration_variable = initial_calibration_variable, 

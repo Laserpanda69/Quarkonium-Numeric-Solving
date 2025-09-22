@@ -52,7 +52,7 @@ def calculate_meson_masses(meson: Mesons.Meson,r_space,wavefunction,n_states_cou
         min_tp_peak = 100
         
         for l in range(0, n):
-            binding_energy, sol, points_of_interest = numericalSolvers.solve_for_energy(
+            binding_energy, sol, points_of_interest, energy_error = numericalSolvers.solve_for_energy(
                 U0, r_space, wavefunction, n,
                 potential_arguments=(l, calibrated_variable, meson.reduced_mass),
                 epsilon_lower = last_energy_value + offset, 
@@ -64,7 +64,7 @@ def calculate_meson_masses(meson: Mesons.Meson,r_space,wavefunction,n_states_cou
             # print(f"M_{n}{l} = {E+2*charm_quark_mass}")
             last_energy_value = binding_energy
 
-            binding_energies[n].append(binding_energy)
+            binding_energies[n].append((binding_energy, energy_error))
             quark_mass = sum(q.mass for q in meson.quarks)
             masses[n].append(binding_energy + quark_mass)
 

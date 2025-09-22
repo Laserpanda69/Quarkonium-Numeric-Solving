@@ -48,18 +48,19 @@ class Charmonium(Quarkonia):
         super().__init__(state, CharmQuark(1/2, ColorCharge.RED), AntiCharmQuark(1/2, ColorCharge.RED))
         
         if state:
-            self.set_mass(particle_masses[ParticleName.CHARMONIUM][REFERENCE][state])
+            self.set_mass(particle_masses[ParticleName.CHARMONIUM][REFERENCE][state[0]][state[1]]['value'])
             
 class Bottomonium(Quarkonia):
     def __init__(self, state):
         super().__init__(state, BottomQuark(1/2, ColorCharge.RED), AntiBottomQuark(1/2, ColorCharge.RED))
         
         if state:
-            self.set_mass(particle_masses[ParticleName.BOTTOMONIUM][REFERENCE][state])
+            self.set_mass(particle_masses[ParticleName.BOTTOMONIUM][REFERENCE][state[0]][state[1]]['value'])
+
             
 class Toponium(Quarkonia):
     def __init__(self, state):
         super().__init__(state, TopQuark(1/2, ColorCharge.RED), AntiTopQuark(1/2, ColorCharge.RED))
         
         if state:
-            self.set_mass(particle_masses[ParticleName.TOPONIUM][REFERENCE][state])
+            self.set_mass(particle_masses[ParticleName.TOPONIUM][REFERENCE][state[0]][state[1]]['value'])

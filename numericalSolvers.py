@@ -91,7 +91,7 @@ def calibration_staircase(u0, r_space, wave_function, potential_arguments: tuple
     
     # Divergence has flipped and all layers have been run
     gamma = (b_lower+b_upper)/2
-    return gamma, scipy.integrate.odeint(wave_function, u0, r_space, args=(0,gamma, reduced_mass, base_energy))
+    return gamma, scipy.integrate.odeint(wave_function, u0, r_space, args=(0,gamma, reduced_mass, base_energy)), step_size
 
 def energy_staircase(u0, r_space, wave_function, potential_arguments: tuple, epsilon_lower, step_size = 0.015, steps_taken = 0, flight = 5):
     l, beta, reduced_mass = potential_arguments
@@ -121,7 +121,7 @@ def energy_staircase(u0, r_space, wave_function, potential_arguments: tuple, eps
     
     # Divergence has flipped and all layers have been run
         
-    return gamma, scipy.integrate.odeint(wave_function, u0, r_space, args=(l,beta, reduced_mass, gamma))
+    return gamma, scipy.integrate.odeint(wave_function, u0, r_space, args=(l,beta, reduced_mass, gamma)), step_size
 
 
 def calibrate(u0, r_space, wave_function, potential_arguments: tuple, initial_calibration_variable, step_size = 0.015, steps_taken = 0, flight = 5, energy_offset = 0.01):
@@ -129,7 +129,7 @@ def calibrate(u0, r_space, wave_function, potential_arguments: tuple, initial_ca
     limit = 1
     offset = 0.01
     for _ in range(limit):
-        calibrated_variable, numeric_solution = calibration_staircase(u0, r_space, wave_function, potential_arguments, initial_calibration_variable, step_size, steps_taken, flight)
+        calibrated_variable, numeric_solution, final_step_size = calibration_staircase(u0, r_space, wave_function, potential_arguments, initial_calibration_variable, step_size, steps_taken, flight)
         u = numeric_solution[:,0]
         v = numeric_solution[:,1]
 
@@ -141,7 +141,7 @@ def calibrate(u0, r_space, wave_function, potential_arguments: tuple, initial_ca
             pdf = wfns.square_wavefunction(u)
             pdf, u, v = wfns.normalise_wavefunction(r_space, pdf, u, v)
     
-            return calibrated_variable, (pdf, u ,v), (nodes, turning_points)
+            return calibrated_variable, (pdf, u ,v), (nodes, turning_points), final_step_size
         
         calibrated_variable += offset
         
@@ -149,12 +149,12 @@ def calibrate(u0, r_space, wave_function, potential_arguments: tuple, initial_ca
         pdf = wfns.square_wavefunction(u)
         pdf, u, v = wfns.normalise_wavefunction(r_space, pdf, u, v)
     
-        return calibrated_variable, (pdf, u ,v), (nodes, turning_points)
+        return calibrated_variable, (pdf, u ,v), (nodes, turning_points), final_step_size
         
         
 def solve_for_energy(u0, r_space, wave_function, n, potential_arguments: tuple, epsilon_lower, step_size = 0.015, steps_taken = 0, flight = 5, energy_offset = 0.01):
     
-    energy, numeric_solution = energy_staircase(u0, r_space, wave_function, potential_arguments, epsilon_lower, step_size, steps_taken, flight)
+    energy, numeric_solution, final_step_size = energy_staircase(u0, r_space, wave_function, potential_arguments, epsilon_lower, step_size, steps_taken, flight)
     u = numeric_solution[:,0]
     v = numeric_solution[:,1]
 
@@ -166,4 +166,4 @@ def solve_for_energy(u0, r_space, wave_function, n, potential_arguments: tuple, 
     pdf = wfns.square_wavefunction(u)
     pdf, u, v = wfns.normalise_wavefunction(r_space, pdf, u, v)
     
-    return energy, (pdf, u ,v), (nodes, turning_points)
+    return energy, (pdf, u ,v), (nodes, turning_points), final_step_size

@@ -4,10 +4,11 @@
 # electron spin quantum number m_s
 
 class Particle():
-    def __init__(self, mass: float, spin: float, charge: float):
+    def __init__(self, mass: float, spin: float, charge: float, anti:float = 1, mass_error = 0):
         self.mass:float = mass
         self.spin:float = spin
-        self.charge:float = charge
+        self.charge:float = charge*anti
+        self.mass_error:float = mass_error
         
         
     def is_anti_of(other_particle):

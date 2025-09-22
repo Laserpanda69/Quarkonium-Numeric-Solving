@@ -33,25 +33,78 @@ class PhysicalConstants(Enum):
 # All masses in/converted to GeV for consistancy
 particle_masses ={
     'unit': "GeV",
-    ParticleName.UP: 2.16/1000,#GeV +/-0.07 MeV
-    ParticleName.DOWN: 4.70/1000,#GeV+/-0.07 MeV
-    ParticleName.STRANGE: 3.49/1000,#GeV+/-0.07 MeV
-    ParticleName.CHARM: 1.2730,#+/-0.0046 GeV
-    ParticleName.TOP: 172,#+/- 0.31 GeV
-    ParticleName.BOTTOM: 4.183,#+/-0.007GeV
+    ParticleName.UP:{
+        'value': 2.16/1000,
+        'error': 0.07/1000 #GeV
+    },
+    ParticleName.DOWN:{
+        'value': 4.70,
+        'error': 0.07/1000 #GeV
+    },
+    ParticleName.STRANGE:{
+        'value': 3.49/1000,
+        'error': 0.07/1000 #GeV
+    },
+    ParticleName.CHARM: {
+        'value': 1.2730,
+        'error': 0.0046 #GeV
+        },
+    ParticleName.BOTTOM: {
+        'value': 4.183,#GeV
+        'error': 0.007 #GeV
+    },
+    ParticleName.TOP:
+        {
+        'value': 172,
+        'error': 0.31 #GeV
+    },
+
 
     ParticleName.CHARMONIUM:{
         'reference':{
-            '1S': 2.9839#GeV
+            1: {
+                0:{
+                    'value':2.9839,
+                    'error': 0.4 #GeV
+                    },
+                },
+            2:
+            {
+                0:{
+                    'value':None,
+                    'error': None #GeV
+                },
+                1:{
+                    'value': None,
+                    'error': None #GeV
+                }
+            }
         },
+        
         'staircase':{}
     },
     
-    ParticleName.BOTTOMONIUM:{
+        ParticleName.BOTTOMONIUM:{
         'reference':{
-            '1S': 9.3987#Gev +/- 2.0MeV
-        }
-        
+            1: {
+                0:{
+                    'value':9.3987,
+                    'error': 2.0/1000 #GeV
+                    },
+                },
+            2:
+            {
+                0:{
+                    'value':None,
+                    'error': None #GeV
+                },
+                1:{
+                    'value': None,
+                    'error': None #GeV
+                }
+            }
+        },
+        'staircase':{}
     }
 }
 
