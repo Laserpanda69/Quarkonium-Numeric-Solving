@@ -45,6 +45,7 @@ def richerdson_fulcher_potential(r: float, beta: float) -> float:
 
 
 def read_potential(r: float, beta:float) -> float:
-    # - beta / r**2 should introduce a reduction in the potential at high r
-    return -CASIMIR_FACTOR*ALPHA_S/r + beta*r - beta*r**0.5
+    return -CASIMIR_FACTOR*ALPHA_S/r  +  beta*r
+# *(1-np.exp(-(r/15)**1.05))
+# /(1+np.exp((r-13)))
 

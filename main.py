@@ -38,11 +38,11 @@ initial_calibration_var_bottomonium_cornell = 0.006
 
 # User set variables
 state_count = 3
-F = 30
+flights = 30
 REDNER = False
 meson = charmonium_1S
-wavefunction = Wfns.bhanot_rudaz_wave_function
-initial_calibration_variable = initial_calibration_var_charmonium_bh
+wavefunction = Wfns.read_wave_function
+initial_calibration_variable = 0.1
 # /User set variables
 
 fig, axs = plt.subplots(ncols=2, nrows=1)
@@ -55,22 +55,22 @@ plt.plot(r_space, [0]*len(r_space), linestyle = line_styles_dict[LineStyle.LOOSE
 ###########################################
 
 print("Calibrating")
-cornel_beta, sol, points_of_interest, error_on_cornell_beta = numericalSolvers.calibrate(
+beta, sol, points_of_interest, error_on_beta = numericalSolvers.calibrate(
         U0, r_space, wavefunction, 
         potential_arguments= (meson.binding_energy, meson.reduced_mass),
         initial_calibration_variable = initial_calibration_variable, 
-        flight = F
+        flight = flights
     )
 
 
-print(f"calibration got {cornel_beta}")
+print(f"calibration got {beta}")
 pdf, u, v = sol
 axs[0].plot(r_space, pdf, color = 'magenta', linestyle = line_styles_dict[LineStyle.LOOSELY_DASHDOTTED], linewidth = 4, label = "calibration")
 
-binding_energies, masses_errors = calculate_meson_masses(meson, r_space, wavefunction, state_count, cornel_beta, ax = axs[0])
+binding_energies, masses_w_errors = calculate_meson_masses(meson, r_space, wavefunction, state_count, beta, ax = axs[0])
 for n in range(state_count+1):
     for l in range(n):
-        print(f"M_{n}{l} = {masses_errors[n][l][0]} +/- {masses_errors[n][l][1]}")
+        print(f"M_{n}{l} = {masses_w_errors[n][l][0]} +/- {masses_w_errors[n][l][1]}")
         
 ##################################
 ####### Cornel Calibrating #######
@@ -81,10 +81,10 @@ cornell_beta, sol, points_of_interest, error_on_cornell_beta = numericalSolvers.
         U0, r_space, Wfns.corenell_wave_function, 
         potential_arguments= (meson.binding_energy, meson.reduced_mass),
         initial_calibration_variable = initial_calibration_variable, 
-        flight = F
+        flight = flights
     )
 
-print(f"Cornell: {cornel_beta}")
+print(f"Cornell: {cornell_beta}")
         
 ##################################
 ######### BH Calibrating #########
@@ -95,7 +95,7 @@ bh_beta, sol, points_of_interest, error_on_bh_beta = numericalSolvers.calibrate(
         U0, r_space, Wfns.bhanot_rudaz_wave_function, 
         potential_arguments= (meson.binding_energy, meson.reduced_mass),
         initial_calibration_variable = initial_calibration_variable, 
-        flight = F
+        flight = flights
     )
 
 print(f"Bhnot Rudaz: {bh_beta}")
@@ -110,7 +110,7 @@ rf_beta, sol, points_of_interest, error_on_rf_beta = numericalSolvers.calibrate(
         U0, r_space, Wfns.richerdson_fulcher_wave_function, 
         potential_arguments= (meson.binding_energy, meson.reduced_mass),
         initial_calibration_variable = initial_calibration_variable, 
-        flight = F
+        flight = flights
     )
 
 print(f"Richardson Fulcher: {rf_beta}")
@@ -125,7 +125,7 @@ read_beta, sol, points_of_interest, error_on_read_beta = numericalSolvers.calibr
         U0, r_space, Wfns.read_wave_function, 
         potential_arguments= (meson.binding_energy, meson.reduced_mass),
         initial_calibration_variable = initial_calibration_variable, 
-        flight = F
+        flight = flights
     )
 
 print(f"Read: {read_beta}")
@@ -140,7 +140,7 @@ potential_cutoff = 10
 axs[1].plot(r_space, [0]*len(r_space), linestyle = line_styles_dict[LineStyle.LOOSELY_DASHED], color = "grey")
 
 # Plot cornell potential
-potential_values = Vmods.cornell_potential(r_space, cornel_beta)
+potential_values = Vmods.cornell_potential(r_space, cornell_beta)
 # cornell_roof = [val+error_on_cornell_beta for val in potential_values]
 # cornell_floor = [val-error_on_cornell_beta for val in potential_values]
 axs[1].plot(r_space[potential_cutoff:], potential_values[potential_cutoff:], label = "Cornell")
