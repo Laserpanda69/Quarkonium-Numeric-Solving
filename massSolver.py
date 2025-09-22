@@ -8,6 +8,8 @@ from Particles.Hadrons import Mesons
 
 import numericalSolvers
 
+from Particles.Hadrons.Mesons import Meson
+
 from wavefuncitons import corenell_wave_function, bhanot_rudaz_wave_function
 from potentialModels import cornell_potential, bhanot_rudaz_potential
 
@@ -24,9 +26,8 @@ U0 = [0,1]
 
 # Grey line at 0
 
-def calculate_meson_masses(meson: Mesons.Meson,r_space,wavefunction,n_states_count,
-    calibrated_variable,flights=30, ax = None
-) -> tuple[dict]:
+def calculate_meson_masses(r_space,wavefunction,meson_type: Meson, n_states_count, beta, flights=30, ax = None
+) -> list[Meson]:
 
     if ax:
         ax.plot(r_space, [0]*len(r_space), linestyle = line_styles_dict[LineStyle.LOOSELY_DASHED], color = "grey")
@@ -37,39 +38,31 @@ def calculate_meson_masses(meson: Mesons.Meson,r_space,wavefunction,n_states_cou
 
     # Numerical solving of exciterd states
 
-    last_energy_value = meson.binding_energy - 0.1
+    last_energy_value = 0
     offset = 0.01
 
     print("Solving")
     color_cycle = plt.rcParams["axes.prop_cycle"].by_key()["color"]
-
-    binding_energies = [[]]
-    masses = [[]]
+    solved_mesons = [[]]
 
     for n in range(1, n_states_count+1):
-        binding_energies.append([])
-        masses.append([])
-        
         pdf_maxima = 0
         min_tp_peak = 100
+        solved_mesons.append([])
         
         for l in range(0, n):
-            binding_energy, sol, points_of_interest, energy_error = numericalSolvers.solve_for_energy(
-                U0, r_space, wavefunction, n,
-                potential_arguments=(l, calibrated_variable, meson.reduced_mass),
+            meson = meson_type((n,l))
+            meson, sol, points_of_interest = numericalSolvers.solve_for_energy(
+                U0, r_space, wavefunction, meson, beta,
                 epsilon_lower = last_energy_value + offset, 
                 flight = flights
             )
+            solved_mesons[l].append(meson)
             pdf, u, v = sol
 
             # print(f"E_{n}{l} = {E}")
             # print(f"M_{n}{l} = {E+2*charm_quark_mass}")
-            last_energy_value = binding_energy
-
-            binding_energies[n].append((binding_energy, energy_error))
-            quark_mass = sum(q.mass for q in meson.quarks)
-            mass_error = np.sqrt(energy_error**2 + sum(q.mass_error**2 for q in meson.quarks))
-            masses[n].append((binding_energy + quark_mass, mass_error))
+            last_energy_value = meson.binding_energy
 
             if ax:
                 nodes, turning_points = points_of_interest
@@ -101,4 +94,4 @@ def calculate_meson_masses(meson: Mesons.Meson,r_space,wavefunction,n_states_cou
             ax.fill_between(r_space, min_tp_peak_line, pdf_maxima_line, where=(min_tp_peak < pdf_maxima_line), color=color, alpha=0.1)
             ax.legend()
 
-    return binding_energies, masses
+    return solved_mesons

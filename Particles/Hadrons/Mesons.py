@@ -12,7 +12,7 @@ STAIRCASE = 'staircase'
 class Meson(Hadron):#, Boson):
 
     # Mesons are made of quark/anti_quark pairs
-    def __int__(self, state, quark: Quark, anti_quark: Quark):
+    def __int__(self, state: tuple[int, int], quark: Quark, anti_quark: Quark):
         try:
             assert(anti_quark.color.value  * 1/anti_quark.color.value == 1)
         except:
@@ -41,14 +41,17 @@ class Quarkonia(Meson):
             assert(quark.is_anti_of(anti_quark))
         except:
             raise Exception(f"Quarkonia must be two quarks of like flavor/anti-flavor, not {type(quark)= } and {type(anti_quark)= }")
-        Hadron.__init__(self, state, quark, anti_quark)
+        Meson.__init__(self, state, quark, anti_quark)
         
 class Charmonium(Quarkonia):
     def __init__(self, state):
         super().__init__(state, CharmQuark(1/2, ColorCharge.RED), AntiCharmQuark(1/2, ColorCharge.RED))
         
         if state:
-            self.set_mass(particle_masses[ParticleName.CHARMONIUM][REFERENCE][state[0]][state[1]]['value'])
+            try:
+                self.set_mass(particle_masses[ParticleName.CHARMONIUM][REFERENCE][state[0]][state[1]]['value'])
+            except:
+                print(f"No experimental data for {state = }")
             
 class Bottomonium(Quarkonia):
     def __init__(self, state):

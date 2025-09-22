@@ -40,7 +40,7 @@ initial_calibration_var_bottomonium_cornell = 0.006
 state_count = 3
 flights = 30
 REDNER = False
-meson = charmonium_1S
+ground_state_meson = charmonium_1S
 wavefunction = Wfns.read_wave_function
 initial_calibration_variable = 0.1
 # /User set variables
@@ -55,22 +55,27 @@ plt.plot(r_space, [0]*len(r_space), linestyle = line_styles_dict[LineStyle.LOOSE
 ###########################################
 
 print("Calibrating")
-beta, sol, points_of_interest, error_on_beta = numericalSolvers.calibrate(
-        U0, r_space, wavefunction, 
-        potential_arguments= (meson.binding_energy, meson.reduced_mass),
-        initial_calibration_variable = initial_calibration_variable, 
+beta_with_error, sol, points_of_interest = numericalSolvers.calibrate(
+        U0, r_space, wavefunction, ground_state_meson,
+        initial_calibration_variable, 
         flight = flights
     )
 
 
-print(f"calibration got {beta}")
+print(f"calibration got {beta_with_error= }")
 pdf, u, v = sol
 axs[0].plot(r_space, pdf, color = 'magenta', linestyle = line_styles_dict[LineStyle.LOOSELY_DASHDOTTED], linewidth = 4, label = "calibration")
 
-binding_energies, masses_w_errors = calculate_meson_masses(meson, r_space, wavefunction, state_count, beta, ax = axs[0])
-for n in range(state_count+1):
-    for l in range(n):
-        print(f"M_{n}{l} = {masses_w_errors[n][l][0]} +/- {masses_w_errors[n][l][1]}")
+beta = beta_with_error[0]
+mesons = calculate_meson_masses(r_space, wavefunction, Mesons.Charmonium, state_count, beta, ax = axs[0])
+
+for states in mesons:
+    for mes in states:
+        print(f"{mes.state= } has {mes.mass= }")
+        
+plt.show()
+import sys
+sys.exit()
         
 ##################################
 ####### Cornel Calibrating #######
@@ -78,8 +83,7 @@ for n in range(state_count+1):
 
 print("Calibrating Bhnot Rudaz")
 cornell_beta, sol, points_of_interest, error_on_cornell_beta = numericalSolvers.calibrate(
-        U0, r_space, Wfns.corenell_wave_function, 
-        potential_arguments= (meson.binding_energy, meson.reduced_mass),
+        U0, r_space, Wfns.corenell_wave_function, ground_state_meson,
         initial_calibration_variable = initial_calibration_variable, 
         flight = flights
     )
@@ -92,8 +96,7 @@ print(f"Cornell: {cornell_beta}")
 
 print("Calibrating Bhnot Rudaz")
 bh_beta, sol, points_of_interest, error_on_bh_beta = numericalSolvers.calibrate(
-        U0, r_space, Wfns.bhanot_rudaz_wave_function, 
-        potential_arguments= (meson.binding_energy, meson.reduced_mass),
+        U0, r_space, Wfns.bhanot_rudaz_wave_function, ground_state_meson,
         initial_calibration_variable = initial_calibration_variable, 
         flight = flights
     )
@@ -107,8 +110,7 @@ print(f"Bhnot Rudaz: {bh_beta}")
 
 print("Calibrating Richardson Fulcher")
 rf_beta, sol, points_of_interest, error_on_rf_beta = numericalSolvers.calibrate(
-        U0, r_space, Wfns.richerdson_fulcher_wave_function, 
-        potential_arguments= (meson.binding_energy, meson.reduced_mass),
+        U0, r_space, Wfns.richerdson_fulcher_wave_function, ground_state_meson,
         initial_calibration_variable = initial_calibration_variable, 
         flight = flights
     )
@@ -122,8 +124,7 @@ print(f"Richardson Fulcher: {rf_beta}")
 
 print("Calibrating Read")
 read_beta, sol, points_of_interest, error_on_read_beta = numericalSolvers.calibrate(
-        U0, r_space, Wfns.read_wave_function, 
-        potential_arguments= (meson.binding_energy, meson.reduced_mass),
+        U0, r_space, Wfns.read_wave_function, ground_state_meson,
         initial_calibration_variable = initial_calibration_variable, 
         flight = flights
     )

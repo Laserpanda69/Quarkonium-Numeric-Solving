@@ -4,10 +4,11 @@
 # electron spin quantum number m_s
 
 class Particle():
-    def __init__(self, mass: float, spin: float, charge: float, anti:float = 1, mass_error = 0):
+    def __init__(self, mass: float, spin: float, charge: float, state: tuple[int, int], anti:float = 1, mass_error = 0):
         self.mass:float = mass
         self.spin:float = spin
         self.charge:float = charge*anti
+        self.state = state
         self.mass_error:float = mass_error
         
         
