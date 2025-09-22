@@ -67,10 +67,10 @@ print(f"calibration got {cornel_beta}")
 pdf, u, v = sol
 axs[0].plot(r_space, pdf, color = 'magenta', linestyle = line_styles_dict[LineStyle.LOOSELY_DASHDOTTED], linewidth = 4, label = "calibration")
 
-binding_energies, masses = calculate_meson_masses(meson, r_space, wavefunction, state_count, cornel_beta, ax = axs[0])
+binding_energies, masses_errors = calculate_meson_masses(meson, r_space, wavefunction, state_count, cornel_beta, ax = axs[0])
 for n in range(state_count+1):
     for l in range(n):
-        print(f"M_{n}{l} = {masses[n][l]}")
+        print(f"M_{n}{l} = {masses_errors[n][l][0]} +/- {masses_errors[n][l][1]}")
         
 ##################################
 ####### Cornel Calibrating #######
@@ -143,7 +143,7 @@ axs[1].plot(r_space, [0]*len(r_space), linestyle = line_styles_dict[LineStyle.LO
 potential_values = Vmods.cornell_potential(r_space, cornel_beta)
 # cornell_roof = [val+error_on_cornell_beta for val in potential_values]
 # cornell_floor = [val-error_on_cornell_beta for val in potential_values]
-axs[1].plot(r_space[potential_cutoff:], potential_values[potential_cutoff:], label = "Cornell", color = color_cycle[0])
+axs[1].plot(r_space[potential_cutoff:], potential_values[potential_cutoff:], label = "Cornell")
 # axs[1].plot(r_space[potential_cutoff:], cornell_roof[potential_cutoff:], color = color_cycle[0], alpha = 0.3)
 # axs[1].plot(r_space[potential_cutoff:], cornell_floor[potential_cutoff:], color = color_cycle[0], alpha = 0.3)
 # axs[1].fill_between(r_space[potential_cutoff:], cornell_roof[potential_cutoff:], cornell_floor[potential_cutoff:],
@@ -151,24 +151,24 @@ axs[1].plot(r_space[potential_cutoff:], potential_values[potential_cutoff:], lab
 
 
 
-# # Plot BH potential
-# potential_values = [Vmods.bhanot_rudaz_potential(r, bh_beta) for r in r_space]
-# axs[1].plot(r_space[potential_cutoff:], potential_values[potential_cutoff:], label = "Bhanot Rudaz", linestyle = line_styles_dict[LineStyle.LOOSELY_DASHED])
+# Plot BH potential
+potential_values = [Vmods.bhanot_rudaz_potential(r, bh_beta) for r in r_space]
+axs[1].plot(r_space[potential_cutoff:], potential_values[potential_cutoff:], label = "Bhanot Rudaz", linestyle = line_styles_dict[LineStyle.LOOSELY_DASHED])
 
-# v_min = min(potential_values[potential_cutoff:])
-# v_max = max(potential_values[potential_cutoff:])
+v_min = min(potential_values[potential_cutoff:])
+v_max = max(potential_values[potential_cutoff:])
 
-# axs[1].vlines(r_0_calc(bh_beta), ymin = v_min, ymax = v_max, color = "gainsboro", linestyle = line_styles_dict[LineStyle.LONG_DASH_WITH_OFFSET])
-# axs[1].vlines(r_1_calc(bh_beta), ymin = v_min, ymax = v_max, color = "gainsboro", linestyle = line_styles_dict[LineStyle.LONG_DASH_WITH_OFFSET])
-# axs[1].vlines(r_2_calc(bh_beta), ymin = v_min, ymax = v_max, color = "gainsboro", linestyle = line_styles_dict[LineStyle.LONG_DASH_WITH_OFFSET])
+axs[1].vlines(r_0_calc(bh_beta), ymin = v_min, ymax = v_max, color = "gainsboro", linestyle = line_styles_dict[LineStyle.LONG_DASH_WITH_OFFSET])
+axs[1].vlines(r_1_calc(bh_beta), ymin = v_min, ymax = v_max, color = "gainsboro", linestyle = line_styles_dict[LineStyle.LONG_DASH_WITH_OFFSET])
+axs[1].vlines(r_2_calc(bh_beta), ymin = v_min, ymax = v_max, color = "gainsboro", linestyle = line_styles_dict[LineStyle.LONG_DASH_WITH_OFFSET])
 
-# # Plot RF potential
-# potential_values = Vmods.richerdson_fulcher_potential(r_space, rf_beta)
-# axs[1].plot(r_space[potential_cutoff+2:], potential_values[potential_cutoff+2:], label = "Richardson Fulcher", linestyle = line_styles_dict[LineStyle.DASHDOTTED])
+# Plot RF potential
+potential_values = Vmods.richerdson_fulcher_potential(r_space, rf_beta)
+axs[1].plot(r_space[potential_cutoff+2:], potential_values[potential_cutoff+2:], label = "Richardson Fulcher", linestyle = line_styles_dict[LineStyle.DASHDOTTED])
 
-# # Plot Read potential
-# potential_values = Vmods.read_potential(r_space, 0.2)
-# axs[1].plot(r_space[potential_cutoff+2:], potential_values[potential_cutoff+2:], label = "Read", linestyle = line_styles_dict[LineStyle.DASHDOTTED])
+# Plot Read potential
+potential_values = Vmods.read_potential(r_space, 0.2)
+axs[1].plot(r_space[potential_cutoff+2:], potential_values[potential_cutoff+2:], label = "Read", linestyle = line_styles_dict[LineStyle.DASHDOTTED])
 
 
 ##############################

@@ -13,6 +13,8 @@ from potentialModels import cornell_potential, bhanot_rudaz_potential
 
 from linestyles import LineStyle, line_styles_dict, line_styles_list
 
+import numpy as np
+
 # https://pdg.lbl.gov/
 
 GROUND_STATE = '1S'
@@ -66,7 +68,8 @@ def calculate_meson_masses(meson: Mesons.Meson,r_space,wavefunction,n_states_cou
 
             binding_energies[n].append((binding_energy, energy_error))
             quark_mass = sum(q.mass for q in meson.quarks)
-            masses[n].append(binding_energy + quark_mass)
+            mass_error = np.sqrt(energy_error**2 + sum(q.mass_error**2 for q in meson.quarks))
+            masses[n].append((binding_energy + quark_mass, mass_error))
 
             if ax:
                 nodes, turning_points = points_of_interest
