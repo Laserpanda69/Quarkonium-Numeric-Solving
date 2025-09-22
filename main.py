@@ -67,15 +67,8 @@ pdf, u, v = sol
 axs[0].plot(r_space, pdf, color = 'magenta', linestyle = line_styles_dict[LineStyle.LOOSELY_DASHDOTTED], linewidth = 4, label = "calibration")
 
 beta = beta_with_error[0]
-mesons = calculate_meson_masses(r_space, wavefunction, Mesons.Charmonium, state_count, beta, ax = axs[0])
+# mesons = calculate_meson_masses(r_space, wavefunction, Mesons.Charmonium, state_count, beta, ax = axs[0])
 
-for states in mesons:
-    for mes in states:
-        print(f"{mes.state= } has {mes.mass= }")
-        
-plt.show()
-import sys
-sys.exit()
         
 ##################################
 ####### Cornel Calibrating #######

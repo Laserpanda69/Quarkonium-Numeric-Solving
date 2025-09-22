@@ -1,6 +1,7 @@
 from Particles.Fermions.Quarks import Quark
 from Particles.Particle import Particle
 import regex as re
+from numericalSolvers import energy_staircase
 
 # Particles made of quarks
 # held together by the strong force
@@ -25,5 +26,8 @@ class Hadron(Particle):
     def set_mass(self, mass: float):
         self.mass = mass
         self.binding_energy = mass - self.quark_mass
+        
+    def calculate_binding_energy(self, r_space, wave_function, beta, epsilon_lower):
+        self, numeric_solution = energy_staircase([1,0], r_space, wave_function, self, beta, epsilon_lower)
 
 
