@@ -26,7 +26,6 @@ def read_wave_function(u0,r, l, beta, mu, E):
     return _wave_function(u0,r, l, beta, mu, E, Vmods.read_potential)
 
 
-
 def _calibrated_wave_function(u0,r, l, mu, E, calibrated_potential_model):
     u,v= u0
     L = l*(l+1)
@@ -34,20 +33,17 @@ def _calibrated_wave_function(u0,r, l, mu, E, calibrated_potential_model):
     
     return [v,(L*u)/(r*r) -2*mu*u*(E-potential)]
 
-def calibrate_cornell_wave_function(beta: float) -> callable:
-    return lambda u0,r, l, mu, E: _calibrated_wave_function(u0,r, l, mu, E, Vmods.calibrated_cornell_potential(beta))
-
-def calibrate_bhanot_rudaz_wave_function(beta: float) -> callable:
-    return lambda u0,r, l, mu, E:  _calibrated_wave_function(u0,r, l, mu, E, Vmods.calibrated_bhanot_rudaz_potential(beta))
-
-def calibrate_richardson_fulcher_wave_function(beta: float) -> callable:
-    return lambda u0,r, l, mu, E:  _calibrated_wave_function(u0,r, l, mu, E, Vmods.calibrated_richardson_fulcher_potential(beta))
-    
-
-def calibrate_read_wave_function(beta: float) -> callable:
-    return lambda u0,r, l, mu, E:  _calibrated_wave_function(u0,r, l, mu, E, Vmods.calibrated_read_potential(beta))
-
-
+def calibrate_wavefunction(potential_model: callable, *args):
+    if args:
+        return lambda u0,r, l, mu, E: _calibrated_wave_function(
+            u0,r, l, mu, E,
+            Vmods.calibrate_potential_model(potential_model, *args)
+        )
+    # potentail model is already calibrated
+    return lambda u0,r, l, mu, E: _calibrated_wave_function(
+    u0,r, l, mu, E,
+    potential_model
+    )
 
 
 def square_wavefunction(wave_function: list[float]) -> list[float]:

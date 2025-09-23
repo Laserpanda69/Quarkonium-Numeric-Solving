@@ -30,7 +30,7 @@ print(f"Casimir Factor = {CASIMIR_FACTOR}")
 
 
 
-def cornell_potential(r: float, qcd_string_tentsion: float) -> list[float]:
+def cornell_potential(r: float, qcd_string_tentsion: float) -> float:
     return -CASIMIR_FACTOR*ALPHA_S/r + qcd_string_tentsion*r
 
 def calibrated_cornell_potential(beta: float) -> callable:
@@ -77,6 +77,5 @@ def read_potential(r: float, beta:float) -> float:
 # *(1-np.exp(-(r/15)**1.05))
 # /(1+np.exp((r-13)))
 
-def calibrated_read_potential(beta: float) -> callable:
-    return lambda r: read_potential(r, beta)
-
+def calibrate_potential_model(potential_model: callable, *args) -> callable:
+    return lambda r: potential_model(r, *args)

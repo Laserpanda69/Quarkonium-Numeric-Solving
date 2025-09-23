@@ -63,9 +63,10 @@ cornell_beta, sol, points_of_interest = numericalSolvers.calibrate(
         initial_calibration_variable = initial_calibration_variable, 
         flight = flights
     )
+print(f"{cornell_beta= }")
+calibrated_cornell_potential = Vmods.calibrate_potential_model(Vmods.cornell_potential, cornell_beta[0])
+calibrated_cornell_wavefunction = Wfns.calibrate_wavefunction(calibrated_cornell_potential)
 
-print(f"Cornell: {cornell_beta}")
-        
 ##################################
 ######### BH Calibrating #########
 ##################################
@@ -76,8 +77,9 @@ bhanot_rudaz_beta, sol, points_of_interest = numericalSolvers.calibrate(
         initial_calibration_variable = initial_calibration_variable, 
         flight = flights
     )
-
-print(f"Bhnot Rudaz: {bhanot_rudaz_beta}")
+print(f"{bhanot_rudaz_beta= }")
+calibrated_bhanot_rudaz_potential = Vmods.calibrate_potential_model(Vmods.bhanot_rudaz_potential, bhanot_rudaz_beta[0])
+calibrated_bhanot_rudaz_wavefunction = Wfns.calibrate_wavefunction(calibrated_bhanot_rudaz_potential)
 
 
 ##################################
@@ -90,8 +92,9 @@ richardson_fulcher_beta, sol, points_of_interest = numericalSolvers.calibrate(
         initial_calibration_variable = initial_calibration_variable, 
         flight = flights
     )
-
-print(f"Richardson Fulcher: {richardson_fulcher_beta}")
+print(f"{richardson_fulcher_beta= }")
+calibrated_richardson_fulcher_potential = Vmods.calibrate_potential_model(Vmods.richardson_fulcher_potential, richardson_fulcher_beta[0])
+calibrated_richardson_fulcher_wavefunction = Wfns.calibrate_wavefunction(calibrated_richardson_fulcher_potential)
 
 
 ##################################
@@ -104,32 +107,33 @@ read_beta, sol, points_of_interest = numericalSolvers.calibrate(
         initial_calibration_variable = initial_calibration_variable, 
         flight = flights
     )
+print(f"{read_beta= }")
+calibrated_read_potential = Vmods.calibrate_potential_model(Vmods.read_potential, read_beta[0])
+calibrated_read_wavefunction = Wfns.calibrate_wavefunction(calibrated_read_potential)
 
-print(f"Read: {read_beta}")
 
 ##################################
 ## Clcualte Masses and Plot PDF ##
 ##################################
 
 axs[0,0].set_title("Cornell")
-cornell_mesons = calculate_meson_masses(r_space, wavefunction=Wfns.calibrate_cornell_wave_function(cornell_beta[0]), 
+cornell_mesons = calculate_meson_masses(r_space, wavefunction=calibrated_cornell_wavefunction, 
     meson_type=Mesons.Charmonium, n_states_count=state_count, ax=axs[0,0])
 
 axs[0,1].set_title("Bhanot Rudaz")
-bhanot_rudaz_mesons = calculate_meson_masses(r_space, wavefunction=Wfns.calibrate_bhanot_rudaz_wave_function(bhanot_rudaz_beta[0]), 
+bhanot_rudaz_mesons = calculate_meson_masses(r_space, wavefunction=calibrated_bhanot_rudaz_wavefunction, 
     meson_type=Mesons.Charmonium, n_states_count=state_count, ax=axs[0,1])
 
 axs[1,0].set_title("Richardson Fulcher")
-richardson_fulcher_mesons = calculate_meson_masses(r_space, wavefunction=Wfns.calibrate_richardson_fulcher_wave_function(richardson_fulcher_beta[0]), 
+richardson_fulcher_mesons = calculate_meson_masses(r_space, wavefunction=calibrated_richardson_fulcher_wavefunction, 
     meson_type=Mesons.Charmonium, n_states_count=state_count, ax=axs[1,0])
 
 axs[1,1].set_title("Read")
-read_mesons = calculate_meson_masses(r_space, wavefunction=Wfns.calibrate_read_wave_function(read_beta[0]), 
+read_mesons = calculate_meson_masses(r_space, wavefunction = calibrated_read_wavefunction, 
     meson_type=Mesons.Charmonium, n_states_count=state_count, ax=axs[1,1])
 
 plt.show()
-import sys
-sys.exit()
+
 ##################################
 ##### POTENTIAL PDF PLOTTING #####
 ##################################
@@ -137,38 +141,38 @@ color_cycle = plt.rcParams["axes.prop_cycle"].by_key()["color"]
 
 # Plot y = 0
 potential_cutoff = 10
-axs[1].plot(r_space, [0]*len(r_space), linestyle = line_styles_dict[LineStyle.LOOSELY_DASHED], color = "grey")
+plt.plot(r_space, [0]*len(r_space), linestyle = line_styles_dict[LineStyle.LOOSELY_DASHED], color = "grey")
 
 # Plot cornell potential
-potential_values = Vmods.cornell_potential(r_space, cornell_beta)
-cornell_roof = [val+error_on_cornell_beta for val in potential_values]
-cornell_floor = [val-error_on_cornell_beta for val in potential_values]
-axs[1].plot(r_space[potential_cutoff:], potential_values[potential_cutoff:], label = "Cornell")
-axs[1].plot(r_space[potential_cutoff:], cornell_roof[potential_cutoff:], color = color_cycle[0], alpha = 0.3)
-axs[1].plot(r_space[potential_cutoff:], cornell_floor[potential_cutoff:], color = color_cycle[0], alpha = 0.3)
-axs[1].fill_between(r_space[potential_cutoff:], cornell_roof[potential_cutoff:], cornell_floor[potential_cutoff:],
-    color = color_cycle[0], alpha = 0.1)
+potential_values = calibrated_cornell_potential(r_space)
+# cornell_roof = [val+error_on_cornell_beta for val in potential_values]
+# cornell_floor = [val-error_on_cornell_beta for val in potential_values]
+plt.plot(r_space[potential_cutoff:], potential_values[potential_cutoff:], label = "Cornell")
+# plt.plot(r_space[potential_cutoff:], cornell_roof[potential_cutoff:], color = color_cycle[0], alpha = 0.3)
+# plt.plot(r_space[potential_cutoff:], cornell_floor[potential_cutoff:], color = color_cycle[0], alpha = 0.3)
+# plt.fill_between(r_space[potential_cutoff:], cornell_roof[potential_cutoff:], cornell_floor[potential_cutoff:],
+    # color = color_cycle[0], alpha = 0.1)
 
 
 
 # Plot BH potential
-potential_values = [Vmods.bhanot_rudaz_potential(r, bh_beta) for r in r_space]
-axs[1].plot(r_space[potential_cutoff:], potential_values[potential_cutoff:], label = "Bhanot Rudaz", linestyle = line_styles_dict[LineStyle.LOOSELY_DASHED])
+potential_values = [calibrated_bhanot_rudaz_potential(r) for r in r_space]
+plt.plot(r_space[potential_cutoff:], potential_values[potential_cutoff:], label = "Bhanot Rudaz", linestyle = line_styles_dict[LineStyle.LOOSELY_DASHED])
 
 v_min = min(potential_values[potential_cutoff:])
 v_max = max(potential_values[potential_cutoff:])
 
-axs[1].vlines(r_0_calc(bh_beta), ymin = v_min, ymax = v_max, color = "gainsboro", linestyle = line_styles_dict[LineStyle.LONG_DASH_WITH_OFFSET])
-axs[1].vlines(r_1_calc(bh_beta), ymin = v_min, ymax = v_max, color = "gainsboro", linestyle = line_styles_dict[LineStyle.LONG_DASH_WITH_OFFSET])
-axs[1].vlines(r_2_calc(bh_beta), ymin = v_min, ymax = v_max, color = "gainsboro", linestyle = line_styles_dict[LineStyle.LONG_DASH_WITH_OFFSET])
+plt.vlines(r_0_calc(bhanot_rudaz_beta[0]), ymin = v_min, ymax = v_max, color = "gainsboro", linestyle = line_styles_dict[LineStyle.LONG_DASH_WITH_OFFSET])
+plt.vlines(r_1_calc(bhanot_rudaz_beta[0]), ymin = v_min, ymax = v_max, color = "gainsboro", linestyle = line_styles_dict[LineStyle.LONG_DASH_WITH_OFFSET])
+plt.vlines(r_2_calc(bhanot_rudaz_beta[0]), ymin = v_min, ymax = v_max, color = "gainsboro", linestyle = line_styles_dict[LineStyle.LONG_DASH_WITH_OFFSET])
 
 # Plot RF potential
-potential_values = Vmods.richerdson_fulcher_potential(r_space, rf_beta)
-axs[1].plot(r_space[potential_cutoff+2:], potential_values[potential_cutoff+2:], label = "Richardson Fulcher", linestyle = line_styles_dict[LineStyle.DASHDOTTED])
+potential_values = calibrated_richardson_fulcher_potential(r_space)
+plt.plot(r_space[potential_cutoff+2:], potential_values[potential_cutoff+2:], label = "Richardson Fulcher", linestyle = line_styles_dict[LineStyle.DASHDOTTED])
 
 # Plot Read potential
-potential_values = Vmods.read_potential(r_space, 0.2)
-axs[1].plot(r_space[potential_cutoff+2:], potential_values[potential_cutoff+2:], label = "Read", linestyle = line_styles_dict[LineStyle.DASHDOTTED])
+potential_values = calibrated_read_potential(r_space)
+plt.plot(r_space[potential_cutoff+2:], potential_values[potential_cutoff+2:], label = "Read", linestyle = line_styles_dict[LineStyle.DASHDOTTED])
 
 
 
