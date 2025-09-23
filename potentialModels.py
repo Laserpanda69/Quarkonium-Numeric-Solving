@@ -61,16 +61,9 @@ def bhanot_rudaz_potential(r: float, beta: float) -> float:
     b   = b_calc(beta)
     return bhanot_rudaz_middle_calc(b, r_0, r)
 
-def calibrated_bhanot_rudaz_potential(beta: float) -> callable:
-    return lambda r: bhanot_rudaz_potential(r, beta)
-
-
 def richardson_fulcher_potential(r: float, beta: float) -> float:
     meson_degrees_of_freedom = 3 # 1 orbit spin, 1 translation, 1 orbit distance 
     return beta*r - (8*math.pi)/((33-2*meson_degrees_of_freedom)*r)
-
-def calibrated_richardson_fulcher_potential(beta: float) -> callable:
-    return lambda r: richardson_fulcher_potential(r, beta)
 
 def read_potential(r: float, beta:float, rho: float) -> float:
     r_0 = 13#GeV^(-1)

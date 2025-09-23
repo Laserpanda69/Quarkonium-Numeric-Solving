@@ -38,31 +38,34 @@ def calculate_meson_masses(r_space,wavefunction,meson_type: Meson, n_states_coun
 
     # Numerical solving of exciterd states
 
-    last_energy_value = 0
-    offset = 0.01
 
     print("Solving")
     color_cycle = plt.rcParams["axes.prop_cycle"].by_key()["color"]
     solved_mesons = [[]]
 
     for n in range(1, n_states_count+1):
+        n_idx = n-1
         pdf_maxima = 0
         min_tp_peak = 100
         solved_mesons.append([])
         
         for l in range(0, n):
             meson = meson_type((n,l))
+            if n_idx == 0: #first meson
+                # Set ground state meson to habe an arbitrarily low non-zero energy
+                meson.set_binding_energy(0.001)
+            elif l == 0:
+                meson.set_binding_energy(solved_mesons[n_idx-1][-1].binding_energy)
+            else:
+                meson.set_binding_energy(solved_mesons[n_idx][-1].binding_energy)
+                
+            print(f"Solving mass of {meson.state}")
             meson, sol, points_of_interest = numericalSolvers.solve_for_energy(
                 U0, r_space, wavefunction, meson,
-                epsilon_lower = last_energy_value + offset, 
                 flight = flights
             )
-            solved_mesons[l].append(meson)
+            solved_mesons[n_idx].append(meson)
             pdf, u, v = sol
-
-            # print(f"E_{n}{l} = {E}")
-            # print(f"M_{n}{l} = {E+2*charm_quark_mass}")
-            last_energy_value = meson.binding_energy
 
             if ax:
                 nodes, turning_points = points_of_interest

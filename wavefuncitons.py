@@ -2,46 +2,44 @@ import numpy as np
 import scipy.integrate 
 
 import potentialModels as Vmods
+# from Particles.Hadrons.Mesons import Meson
 
-def _wave_function(u0,r, l, beta, mu, E, potential_model):
+def _wave_function(u0,r, meson, potential_model, *potential_args):
     u,v= u0
+    l = meson.state[1]
     L = l*(l+1)
-    potential = potential_model(r, beta)
+    potential = potential_model(r, *potential_args)
+    if not potential_args:
+        # No potential_args => calibrated wavefunction
+        potential = potential_model(r)
     
-    return [v,(L*u)/(r*r) -2*mu*u*(E-potential)]
+    return [v,(L*u)/(r*r) -2*meson.reduced_mass*u*(meson.binding_energy-potential)]
 
 
-def cornell_wave_function(u0,r, l, beta, mu, E):
-    return _wave_function(u0,r, l, beta, mu, E, Vmods.cornell_potential)
+def cornell_wave_function(u0,r, meson, beta):
+    return _wave_function(u0,r, meson, Vmods.cornell_potential, beta)
 
 
-def bhanot_rudaz_wave_function(u0,r, l, beta, mu, E):
-    return _wave_function(u0,r, l, beta, mu, E, Vmods.bhanot_rudaz_potential)
+def bhanot_rudaz_wave_function(u0,r, meson, beta):
+    return _wave_function(u0,r, meson, Vmods.bhanot_rudaz_potential, beta)
 
-def richardson_fulcher_wave_function(u0,r, l, beta, mu, E):
-    return _wave_function(u0,r, l, beta, mu, E, Vmods.richardson_fulcher_potential)
+def richardson_fulcher_wave_function(u0,r, meson, beta):
+    return _wave_function(u0,r, meson, Vmods.richardson_fulcher_potential, beta)
     
 
-def read_wave_function(u0,r, l, beta, mu, E):
-    return _wave_function(u0,r, l, beta, mu, E, Vmods.read_potential)
+def read_wave_function(u0,r, meson, beta):
+    return _wave_function(u0,r, meson, Vmods.read_potential, beta)
 
-
-def _calibrated_wave_function(u0,r, l, mu, E, calibrated_potential_model):
-    u,v= u0
-    L = l*(l+1)
-    potential = calibrated_potential_model(r)
-    
-    return [v,(L*u)/(r*r) -2*mu*u*(E-potential)]
 
 def calibrate_wavefunction(potential_model: callable, *args):
     if args:
-        return lambda u0,r, l, mu, E: _calibrated_wave_function(
-            u0,r, l, mu, E,
+        return lambda u0,r, meson: _wave_function(
+            u0,r, meson,
             Vmods.calibrate_potential_model(potential_model, *args)
         )
     # potentail model is already calibrated
-    return lambda u0,r, l, mu, E: _calibrated_wave_function(
-    u0,r, l, mu, E,
+    return lambda u0,r, meson: _wave_function(
+    u0,r, meson,
     potential_model
     )
 
