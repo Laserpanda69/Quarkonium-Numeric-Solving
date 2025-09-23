@@ -72,9 +72,10 @@ def richardson_fulcher_potential(r: float, beta: float) -> float:
 def calibrated_richardson_fulcher_potential(beta: float) -> callable:
     return lambda r: richardson_fulcher_potential(r, beta)
 
-def read_potential(r: float, beta:float) -> float:
-    return -CASIMIR_FACTOR*ALPHA_S/r  +  beta*r
-# *(1-np.exp(-(r/15)**1.05))
+def read_potential(r: float, beta:float, rho: float) -> float:
+    r_0 = 13#GeV^(-1)
+    # [rho] = unitless
+    return -CASIMIR_FACTOR*ALPHA_S/r  +  beta*r*(1-np.exp(-(r/r_0)**rho))
 # /(1+np.exp((r-13)))
 
 def calibrate_potential_model(potential_model: callable, *args) -> callable:

@@ -169,3 +169,30 @@ def solve_for_energy(u0, r_space, wave_function, meson, epsilon_lower, step_size
     pdf, u, v = wfns.normalise_wavefunction(r_space, pdf, u, v)
     
     return meson, (pdf, u ,v), (nodes, turning_points)
+
+
+def wide_calibration_staircase(u0, r_space, wave_function, meson_1S, b_lower_list, step_size = 0.015, steps_taken = 0, flight = 5):
+    # Move epsilon, reduced mass, and fixed value into a tuple 
+    # so other potentialls with differnt arguments can be used
+    
+    # This method not yet using calibration mode
+    for i in range(len(b_lower_list)):
+        b_upper_list = b_lower_list
+        b_upper_list[i] = b_upper_list + step_size * (steps_taken+1)
+        v_lower = scipy.integrate.odeint(wave_function, u0, r_space, args=(0, b_lower, meson_1S.reduced_mass, meson_1S.binding_energy))[:,1]
+        v_upper = scipy.integrate.odeint(wave_function, u0, r_space, args=(0, b_upper, meson_1S.reduced_mass, meson_1S.binding_energy))[:,1]
+        
+        divergence_has_flipped = (v_lower[-1] < 0) != (v_upper[-1] < 0)
+        if not divergence_has_flipped:
+            return calibration_staircase(u0, r_space, wave_function, meson_1S, b_lower =b_upper,
+                step_size= step_size, steps_taken= steps_taken+1, flight=flight)
+        
+        # print(layer)
+        # Divergence has flipped
+        if flight > 0:
+            return calibration_staircase(u0, r_space, wave_function, meson_1S, b_lower=b_lower,
+                step_size = step_size/2, steps_taken = 0, flight = flight - 1)
+        
+        # Divergence has flipped and all layers have been run
+        gamma = (b_lower+b_upper)/2
+        return (gamma, step_size), scipy.integrate.odeint(wave_function, u0, r_space, args=(0, b_lower, meson_1S.reduced_mass, meson_1S.binding_energy))
