@@ -109,28 +109,29 @@ calibrated_richardson_fulcher_wavefunction = Wfns.calibrate_wavefunction(calibra
 #     )
 # print(f"{read_beta= }")
 # calibrated_read_potential = Vmods.calibrate_potential_model(Vmods.read_potential, read_beta[0])
-# calibrated_read_wavefunction = Wfns.calibrate_wavefunction(calibrated_read_potential)
+calibrated_read_potential = Vmods.calibrate_potential_model(Vmods.cornell_potential, cornell_beta[0])
+calibrated_read_wavefunction = Wfns.calibrate_wavefunction(calibrated_read_potential)
 
 
 ##################################
 ## Clcualte Masses and Plot PDF ##
 ##################################
 
-# axs[0,0].set_title("Cornell")
-# cornell_mesons = calculate_meson_masses(r_space, wavefunction=calibrated_cornell_wavefunction, 
-#     meson_type=Mesons.Charmonium, n_states_count=2, ax=axs[0,0])
+axs[0,0].set_title("Cornell")
+cornell_mesons = calculate_meson_masses(r_space, wavefunction=calibrated_cornell_wavefunction, 
+    meson_type=Mesons.Charmonium, n_states_count=3, ax=axs[0,0])
 
 axs[0,1].set_title("Bhanot Rudaz")
 bhanot_rudaz_mesons = calculate_meson_masses(r_space, wavefunction=calibrated_bhanot_rudaz_wavefunction, 
     meson_type=Mesons.Charmonium, n_states_count=state_count, ax=axs[0,1])
 
-# axs[1,0].set_title("Richardson Fulcher")
-# richardson_fulcher_mesons = calculate_meson_masses(r_space, wavefunction=calibrated_richardson_fulcher_wavefunction, 
-#     meson_type=Mesons.Charmonium, n_states_count=state_count, ax=axs[1,0])
+axs[1,0].set_title("Richardson Fulcher")
+richardson_fulcher_mesons = calculate_meson_masses(r_space, wavefunction=calibrated_richardson_fulcher_wavefunction, 
+    meson_type=Mesons.Charmonium, n_states_count=state_count, ax=axs[1,0])
 
-# axs[1,1].set_title("Read")
-# read_mesons = calculate_meson_masses(r_space, wavefunction = calibrated_read_wavefunction, 
-#     meson_type=Mesons.Charmonium, n_states_count=state_count, ax=axs[1,1])
+axs[1,1].set_title("Read")
+read_mesons = calculate_meson_masses(r_space, wavefunction = calibrated_read_wavefunction, 
+    meson_type=Mesons.Charmonium, n_states_count=state_count, ax=axs[1,1])
 
 plt.show()
 

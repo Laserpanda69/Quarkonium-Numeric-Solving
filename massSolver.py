@@ -42,34 +42,30 @@ def calculate_meson_masses(r_space,wavefunction,meson_type: Meson, n_states_coun
     print("Solving")
     color_cycle = plt.rcParams["axes.prop_cycle"].by_key()["color"]
     solved_mesons = [[]]
-
+    last_energy = 0
     for n in range(1, n_states_count+1):
-        n_idx = n-1
         pdf_maxima = 0
         min_tp_peak = 100
         solved_mesons.append([])
         
+        color = color_cycle[n-1]
+        linestyle = line_styles_list[n-1]
+
+        
         for l in range(0, n):
             meson = meson_type((n,l))
-            if n_idx == 0: #first meson
-                # Set ground state meson to habe an arbitrarily low non-zero energy
-                meson.set_binding_energy(0.001)
-            elif l == 0:
-                meson.set_binding_energy(solved_mesons[n_idx-1][-1].binding_energy)
-            else:
-                meson.set_binding_energy(solved_mesons[n_idx][-1].binding_energy)
-                
+            meson.set_binding_energy(last_energy)
             print(f"Solving mass of {meson.state}")
             meson, sol, points_of_interest = numericalSolvers.solve_for_energy(
                 U0, r_space, wavefunction, meson,
                 flight = flights
             )
-            solved_mesons[n_idx].append(meson)
+            last_energy = meson.binding_energy + 0.001
+            solved_mesons[n-1].append(meson)
             pdf, u, v = sol
 
             if ax:
                 nodes, turning_points = points_of_interest
-                color = color_cycle[n-1]
                 linestyle = line_styles_list[l]
 
                 pdf_turning_point_peaks = wfns.find_pdf_peaks(r_space, pdf, turning_points['positions'])
@@ -87,11 +83,15 @@ def calculate_meson_masses(r_space,wavefunction,meson_type: Meson, n_states_coun
                 local_lowest_peak = min(pdf_turning_point_peaks)
                 min_tp_peak = local_lowest_peak if local_lowest_peak < min_tp_peak else min_tp_peak
                 min_tp_peak_line = [min_tp_peak]*len(r_space)
+                
 
-                ax.scatter(turning_points['positions'], pdf_turning_point_peaks, color = color, linewidths= .5)
-                ax.plot(r_space, pdf, color=color, linestyle=linestyle, label=f"M_{n}{l} = {meson.mass:.2f}")
-                ax.plot(r_space,pdf_maxima_line,linestyle=line_styles_dict[LineStyle.LOOSELY_DOTTED],color=color,alpha=0.4,)
-                ax.plot(r_space, min_tp_peak_line, linestyle = line_styles_dict[LineStyle.LOOSELY_DOTTED], color = color, alpha = 0.4)
+                
+                ax.plot(r_space, pdf, linestyle=linestyle, label=f"M_{n}{l} = {meson.mass:.2f}", color = color)
+
+
+                ax.scatter(turning_points['positions'], pdf_turning_point_peaks, linestyle = linestyle, linewidths= .5, color = color)
+                ax.plot(r_space,pdf_maxima_line,linestyle=line_styles_dict[LineStyle.SOLID],color=color,alpha=0.2)
+                ax.plot(r_space, min_tp_peak_line, linestyle = line_styles_dict[LineStyle.SOLID], color = color, alpha = 0.2)
 
         if ax:
             ax.fill_between(r_space, min_tp_peak_line, pdf_maxima_line, where=(min_tp_peak < pdf_maxima_line), color=color, alpha=0.1)
