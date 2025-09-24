@@ -27,8 +27,8 @@ def richardson_fulcher_wave_function(u0,r, meson, beta):
     return _wave_function(u0,r, meson, Vmods.richardson_fulcher_potential, beta)
     
 
-def read_wave_function(u0,r, meson, beta):
-    return _wave_function(u0,r, meson, Vmods.read_potential, beta)
+def read_wave_function(u0,r, meson, *args):
+    return _wave_function(u0,r, meson, Vmods.read_potential, *args)
 
 
 def calibrate_wavefunction(potential_model: callable, *args):

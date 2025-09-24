@@ -58,7 +58,7 @@ for ax in axs:
 ##################################
 
 print("Calibrating Cornell")
-cornell_beta, sol, points_of_interest = numericalSolvers.calibrate(
+cornell_beta, sol, points_of_interest = numericalSolvers.calibrate_and_evaluate(
         U0, r_space, Wfns.cornell_wave_function, ground_state_meson,
         initial_calibration_variable = initial_calibration_variable, 
         flight = flights
@@ -72,7 +72,7 @@ calibrated_cornell_wavefunction = Wfns.calibrate_wavefunction(calibrated_cornell
 ##################################
 
 print("Calibrating Bhnot Rudaz")
-bhanot_rudaz_beta, sol, points_of_interest = numericalSolvers.calibrate(
+bhanot_rudaz_beta, sol, points_of_interest = numericalSolvers.calibrate_and_evaluate(
         U0, r_space, Wfns.bhanot_rudaz_wave_function, ground_state_meson,
         initial_calibration_variable = initial_calibration_variable, 
         flight = flights
@@ -87,7 +87,7 @@ calibrated_bhanot_rudaz_wavefunction = Wfns.calibrate_wavefunction(calibrated_bh
 ##################################
 
 print("Calibrating Richardson Fulcher")
-richardson_fulcher_beta, sol, points_of_interest = numericalSolvers.calibrate(
+richardson_fulcher_beta, sol, points_of_interest = numericalSolvers.calibrate_and_evaluate(
         U0, r_space, Wfns.richardson_fulcher_wave_function, ground_state_meson,
         initial_calibration_variable = initial_calibration_variable, 
         flight = flights
@@ -101,15 +101,14 @@ calibrated_richardson_fulcher_wavefunction = Wfns.calibrate_wavefunction(calibra
 ######## Read Calibrating ########
 ##################################
 
-# print("Calibrating Read")
-# read_beta, sol, points_of_interest = numericalSolvers.calibrate(
-#         U0, r_space, Wfns.read_wave_function, ground_state_meson,
-#         initial_calibration_variable = initial_calibration_variable, 
-#         flight = flights
-#     )
-# print(f"{read_beta= }")
-# calibrated_read_potential = Vmods.calibrate_potential_model(Vmods.read_potential, read_beta[0])
-calibrated_read_potential = Vmods.calibrate_potential_model(Vmods.cornell_potential, cornell_beta[0])
+print("Calibrating Read")
+read_beta, sol, points_of_interest = numericalSolvers.polish_evaluation(
+        U0, r_space, Wfns.read_wave_function, ground_state_meson,
+        initial_beta_list = [0.1, 1], 
+        flight = flights
+    )
+print(f"{read_beta= }")
+calibrated_read_potential = Vmods.calibrate_potential_model(Vmods.read_potential, read_beta[0])
 calibrated_read_wavefunction = Wfns.calibrate_wavefunction(calibrated_read_potential)
 
 
